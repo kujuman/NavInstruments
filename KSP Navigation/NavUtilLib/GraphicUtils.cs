@@ -1,95 +1,153 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using KSP;
 
+using mat = NavUtilLib.GlobalVariables.Materials;
+
 namespace NavUtilLib
 {
-    public static class GraphicUtils
+    public static class Graphics
     {
-
-
-        public static Texture2D OnWindow(float brightness)
+        public static RenderTexture drawCenterRotatedImage(float headingDeg, Vector2 centerPercent, Material mat, RenderTexture screen, float xOffset, float yOffset)
         {
-            float Scale = 1;
+            float w = (float)mat.mainTexture.width / (float)screen.width / 2;
+            float h = (float)mat.mainTexture.height / (float)screen.height / 2;
 
-            Texture2D displayTex = new Texture2D(640,640);
-            Color backgroundColor;
-            backgroundColor.a = 1;
-            backgroundColor.b = 0.15f;
-            backgroundColor.r = 0.15f;
-            backgroundColor.g = 0.15f;
+            headingDeg = (float)Utils.makeAngle0to360(headingDeg);
+            headingDeg = (float)Utils.CalcRadiansFromDeg(headingDeg);
 
-            backgroundColor.b = brightness;
-            backgroundColor.r = brightness;
-            backgroundColor.g = brightness;
+            Vector2[] corners = new Vector2[4];
 
-            var fillColorArray =  displayTex.GetPixels();
+            corners[0] = new Vector2(-w + xOffset, -h + yOffset);
+            corners[1] = new Vector2(+w + xOffset, -h + yOffset);
+            corners[2] = new Vector2(+w + xOffset, +h + yOffset);
+            corners[3] = new Vector2(-w + xOffset, +h + yOffset);
 
-            for (var i = 0; i < fillColorArray.Length; ++i)
+            for (int i = 0; i < corners.Length; i++)
             {
-                fillColorArray[i] = backgroundColor;
+                float x = corners[i].x;
+                corners[i].x = (Mathf.Cos(headingDeg) * corners[i].x) + (Mathf.Sin(headingDeg) * corners[i].y);
+
+                corners[i].y = (Mathf.Cos(headingDeg) * corners[i].y) - (Mathf.Sin(headingDeg) * x);
             }
 
+            Debug.Log(".4");
 
-            displayTex.Apply();
+            mat.SetPass(0);
+            GL.LoadOrtho();
+            GL.Color(Color.red);
+            GL.Begin(GL.QUADS);
 
-            return displayTex;
+            GL.TexCoord2(0, 0);
+            GL.Vertex3(centerPercent.x + corners[0].x, centerPercent.y + corners[0].y, 0);
 
+            GL.TexCoord2(1, 0);
+            GL.Vertex3(centerPercent.x + corners[1].x, centerPercent.y + corners[1].y, 0);
 
-            /*
+            GL.TexCoord2(1, 1);
+            GL.Vertex3(centerPercent.x + corners[2].x, centerPercent.y + corners[2].y, 0);
 
+            GL.TexCoord2(0, 1);
+            GL.Vertex3(centerPercent.x + corners[3].x, centerPercent.y + corners[3].y, 0);
 
+            GL.End();
 
-
-            GUI.DrawTexture(new Rect(0, 0, Resources.hsi_back.width * Scale, Resources.hsi_back.height * Scale), Resources.hsi_back, ScaleMode.ScaleToFit, true); //background
-
-            drawCenterRotatedImage((float)Utils.makeAngle0to360(360 - FlightGlobals.ship_heading), Resources.hsi_back.width, Resources.hsi_back.height, Resources.hsi_heading_card, 0, 0); //compass
-
-            drawCenterRotatedImage((float)Utils.makeAngle0to360(360 - FlightGlobals.ship_heading) + (float)Utils.makeAngle0to360(bearingToBeacon), Resources.hsi_back.width, Resources.hsi_back.height, Resources.hsi_NDB_needle, 0, 0); //NDB
-
-            drawCenterRotatedImage((float)Utils.makeAngle0to360(360 - FlightGlobals.ship_heading) + (float)rwyList[rwyIdx].hdg, Resources.hsi_back.width, Resources.hsi_back.height, Resources.hsi_course_needle, 0, 0); //course
-
-            float deviationCorrection;
-            deviationCorrection = localizerDeviation * 50 * Scale;
-            deviationCorrection = Math.Min(150 * Scale, deviationCorrection);
-            deviationCorrection = Math.Max(-150 * Scale, deviationCorrection);
-
-            drawCenterRotatedImage((float)Utils.makeAngle0to360(360 - FlightGlobals.ship_heading) + (float)rwyList[rwyIdx].hdg, Resources.hsi_back.width, Resources.hsi_back.height, Resources.hsi_course_deviation_needle, deviationCorrection, 0); //localizer needle
-
-            GUI.DrawTexture(new Rect(0, 0, Resources.hsi_overlay.width * Scale, Resources.hsi_overlay.height * Scale), Resources.hsi_overlay, ScaleMode.ScaleToFit, true);//overlay
-
-            deviationCorrection = glideslopeDeviation * 200;
-            deviationCorrection = Math.Min(140, deviationCorrection);
-            deviationCorrection = Math.Max(-140, deviationCorrection);
-            //deviationCorrection *= -1;
-
-            GUI.DrawTexture(new Rect(0, (329 + deviationCorrection) * Scale, Resources.hsi_GS_pointer.width * Scale, Resources.hsi_GS_pointer.height * Scale), Resources.hsi_GS_pointer, ScaleMode.ScaleToFit, true);//glideslope pointer
-
-            //drawNumbers(50, 473, (float)Math.Min(999, Math.Round(distanceToBeacon / 1000f, 1)), false); //draw DME
-            //drawNumbers(30, 40, (float)Math.Round(rwyList[rwyIdx].hdg), true); //draw Course
-            //drawNumbers(450, 10, (float)Math.Round(FlightGlobals.ship_heading), true); //draw heading
-            //drawNumbers(450, 39, (float)Math.Round(makeAngle0to360(bearingToBeacon)), true); //draw bearing
-             * 
-             * */
+            return screen;
         }
 
-        public static void drawCenterRotatedImage(float heading, float width, float height, Texture2D img, float xOffset, float yOffset)
+        public static RenderTexture drawMovedImage(Material mat, RenderTexture screen, Vector2 bottomLeftPercent, bool useCenterOfMat, bool fitToScreen)
         {
-            float Scale = 1;
+            float w = (float)mat.mainTexture.width / (float)screen.width;
+            float h = (float)mat.mainTexture.height / (float)screen.height;
 
-            float w = img.width;
-            float h = img.height;
+            if(fitToScreen)
+            {
+                w= screen.width;
+                h = screen.height;
+                useCenterOfMat = false;
+            }
 
-            float x = (width - w) * Scale / 2 + xOffset * Scale;
-            float y = (height - h) * Scale / 2 + yOffset * Scale;
-            float widthP = w * Scale;
-            float heightP = h * Scale;
+            if (useCenterOfMat)
+            {
+                bottomLeftPercent.x -= .5f * w;
+                bottomLeftPercent.y -= .5f * h;
+            }
 
-            Vector2 pivotPoint = new Vector2(width * Scale / 2, height * Scale / 2);
+            mat.SetPass(0);
+            GL.LoadOrtho();
+            GL.Color(Color.red);
+            GL.Begin(GL.QUADS);
 
-            GUIUtility.RotateAroundPivot(heading, pivotPoint);
-            GUI.DrawTexture(new Rect(x, y, widthP, heightP), img, ScaleMode.ScaleToFit, true);
-            GUI.matrix = Matrix4x4.identity;
+            GL.TexCoord2(0, 0);
+            GL.Vertex3(bottomLeftPercent.x, bottomLeftPercent.y, 0);
+
+            GL.TexCoord2(0, 1);
+            GL.Vertex3(bottomLeftPercent.x, h + bottomLeftPercent.y, 0);
+
+            GL.TexCoord2(1, 1);
+            GL.Vertex3(w + bottomLeftPercent.x, h + bottomLeftPercent.y, 0);
+
+            GL.TexCoord2(1, 0);
+            GL.Vertex3(w + bottomLeftPercent.x, bottomLeftPercent.y, 0);
+            GL.End();
+
+            return screen;
+        }
+
+        public static RenderTexture drawMovedImagePortion(Material mat, float bottom, float top, float left, float right, RenderTexture screen, Vector2 bottomLeftPercent, bool useCenterOfMat)
+        {
+            float w = (float)mat.mainTexture.width / (float)screen.width;
+            float h = (float)mat.mainTexture.height / (float)screen.height;
+
+
+            w *= (right - left);
+            h *= (top - bottom);
+
+            if (useCenterOfMat)
+            {
+                bottomLeftPercent.x -= .5f * w;
+                bottomLeftPercent.y -= .5f * h;
+            }
+
+            mat.SetPass(0);
+            GL.LoadOrtho();
+            GL.Color(Color.red);
+            GL.Begin(GL.QUADS);
+
+            GL.TexCoord2(left, bottom);
+            GL.Vertex3(bottomLeftPercent.x, bottomLeftPercent.y, 0);
+
+            GL.TexCoord2(left, top);
+            GL.Vertex3(bottomLeftPercent.x, h + bottomLeftPercent.y, 0);
+
+            GL.TexCoord2(right, top);
+            GL.Vertex3(w + bottomLeftPercent.x, h + bottomLeftPercent.y, 0);
+
+            GL.TexCoord2(right, bottom);
+            GL.Vertex3(w + bottomLeftPercent.x, bottomLeftPercent.y, 0);
+
+            GL.End();
+
+            return screen;
+        }
+
+        
+
+        public static Material loadMaterial(string fileName, Material mat, int width, int height)
+        {
+            Shader unlit = Shader.Find("KSP/Alpha/Unlit Transparent");
+            mat = new Material(unlit);
+            mat.color = new Color(1, 1, 1, 1);
+            mat.mainTexture = texFile(fileName, width, height);
+            return mat;
+        }
+
+        private static Texture2D texFile(string fileName, int w, int h)
+        {
+            Texture2D t = new Texture2D(w, h);
+            t.LoadImage(KSP.IO.File.ReadAllBytes<NavUtilLibHelper>(fileName));
+            return t;
         }
     }
 }

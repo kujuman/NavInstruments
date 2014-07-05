@@ -145,7 +145,39 @@ namespace NavUtilLib
         #endregion
 
         #region Format text for display on a screen
-        
+       public static string numberFormatter(float numToDisplay, bool isHeading)
+        {
+            string output = "";
+
+            int tenths = (int)((numToDisplay * 10) % 10);
+            int ones = (int)Math.Abs(numToDisplay / 1 % 10);
+            int tens = (int)Math.Abs(numToDisplay / 10 % 10);
+            int hundreds = (int)Math.Abs(numToDisplay / 100 % 10);
+
+            if (isHeading)
+            {
+                output = hundreds.ToString() + tens.ToString() + ones.ToString();
+                return output;
+            }
+
+            if (numToDisplay < 100)
+            {
+                if (tens != 0)
+                    output = tens.ToString();
+
+                output += ones.ToString() + "." + tenths.ToString();
+                return output;
+            }
+
+            output = hundreds.ToString() + tens.ToString() + ones.ToString();
+
+            if (numToDisplay > 999.5)
+                output = "999";
+
+
+            return output;
+        }
+
         #endregion
     }
 }

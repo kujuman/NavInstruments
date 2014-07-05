@@ -6,6 +6,8 @@ using System.IO;
 using UnityEngine;
 using KSP;
 using NavUtilLib;
+using mat = NavUtilLib.GlobalVariables.Materials;
+using aud = NavUtilLib.GlobalVariables.Audio;
 
 namespace KSFRPMHSI
 {
@@ -32,24 +34,15 @@ namespace KSFRPMHSI
 
         public static double timer;
 
+        /*
         private GameObject audioplayer = new GameObject();
         private AudioSource markerAudio = new AudioSource();
-
+        */
 
         string settingsFileURL = "GameData/KerbalScienceFoundation/NavInstruments/settings.cfg";
 
         //Color32 backgroundColorValue = Color.red;
         Texture2D hsi_back = new Texture2D(640, 640);
-
-        private Material overlayMaterial;
-        private Material pointerMaterial;
-        private Material headingCardMaterial;
-        private Material NDBneedleMaterial;
-        private Material courseMaterial;
-        private Material localizerMaterial;
-        private Material mkrbcnMaterial;
-        private Material flagMaterial;
-        //private string staticOverlay = "KerbalScienceFoundation/NavInstruments/MFD/Textures/troll.png";
 
         public bool DrawMLS(RenderTexture screen, float aspectRatio)
         {
@@ -69,7 +62,6 @@ namespace KSFRPMHSI
             float locDeviation = NavUtilLib.Utils.CalcLocalizerDeviation(bearing, Rwy);
             float gsDeviation = NavUtilLib.Utils.CalcGlideslopeDeviation(elevation, glideSlope);
 
-            //Debug.Log("Loc Deviation: " + locDeviation);
 
             if (locDeviation > 10 && locDeviation < 170 || locDeviation < -10 && locDeviation >-170)
                 locFlag = true;
@@ -78,20 +70,18 @@ namespace KSFRPMHSI
             {
                 bcFlag = true;
             }
-
-            Graphics.Blit(hsi_back, screen);
-
             GL.PushMatrix();
 
             GL.LoadPixelMatrix(0, screen.width, screen.height, 0);
             GL.Viewport(new Rect(0, 0, screen.width, screen.height));
 
-            drawCenterRotatedImage(360-FlightGlobals.ship_heading, new Vector2(.5f, .5f), headingCardMaterial, screen,0,0);
-            drawCenterRotatedImage(360 -FlightGlobals.ship_heading + (float)bearing, new Vector2(.5f, .5f), NDBneedleMaterial, screen,0,0);
-            drawCenterRotatedImage(360 - FlightGlobals.ship_heading + (float)Rwy.hdg,new Vector2(.5f, .5f),courseMaterial,screen,0,0);
+            screen = NavUtilLib.Graphics.drawMovedImage(mat.Instance.back, screen, new Vector2(0, 0), false,true);
+
+            screen = NavUtilLib.Graphics.drawCenterRotatedImage(360 - FlightGlobals.ship_heading, new Vector2(.5f, .5f), mat.Instance.headingCard, screen, 0, 0);
 
 
-
+            screen = NavUtilLib.Graphics.drawCenterRotatedImage(360 - FlightGlobals.ship_heading + (float)bearing, new Vector2(.5f, .5f), mat.Instance.NDBneedle, screen, 0, 0);
+            screen = NavUtilLib.Graphics.drawCenterRotatedImage(360 - FlightGlobals.ship_heading + (float)Rwy.hdg, new Vector2(.5f, .5f), mat.Instance.course, screen, 0, 0);
 
             if (!locFlag)
             {
@@ -101,22 +91,22 @@ namespace KSFRPMHSI
 
                     deviationCorrection = ((360 + locDeviation)%360 -180) * 0.078125f;
 
-                    drawMovedImagePortion(flagMaterial, 0, .3125f, 0, 1, screen, new Vector2(.821875f, .1703125f), false);
+                    screen = NavUtilLib.Graphics.drawMovedImagePortion(mat.Instance.flag, 0, .3125f, 0, 1, screen, new Vector2(.821875f, .1703125f), false);
                 }
                 else //not backcourse
                 {
                     deviationCorrection = locDeviation * -.078125f;
                 }
                 deviationCorrection = Mathf.Clamp(deviationCorrection, -0.234375f, 0.234375f);
-                drawCenterRotatedImage(360 - FlightGlobals.ship_heading + (float)Rwy.hdg, new Vector2(.5f, .5f), localizerMaterial, screen, deviationCorrection, 0);
+                screen = NavUtilLib.Graphics.drawCenterRotatedImage(360 - FlightGlobals.ship_heading + (float)Rwy.hdg, new Vector2(.5f, .5f), mat.Instance.localizer, screen, deviationCorrection, 0);
             }
             else //draw flag
             {
-                drawMovedImagePortion(flagMaterial, .34375f, .65625f, 0, 1, screen, new Vector2(.821875f, 0.2046875f), false);
+                screen = NavUtilLib.Graphics.drawMovedImagePortion(mat.Instance.localizer, .34375f, .65625f, 0, 1, screen, new Vector2(.821875f, 0.2046875f), false);
             }
 
 
-            drawMovedImage(overlayMaterial, screen, new Vector2(0, 0),false);
+            screen = NavUtilLib.Graphics.drawMovedImage(mat.Instance.overlay, screen, new Vector2(0, 0), false,false);
 
             //marker beacons
             //imageBox takes bottom x, 
@@ -140,15 +130,15 @@ namespace KSFRPMHSI
                     switch(bcnCode)
                     {
                         case 1:
-                            markerAudio.PlayOneShot(GameDatabase.Instance.GetAudioClip("KSFHSI/Sounds/outer"));
+                            aud.markerAudio.PlayOneShot(GameDatabase.Instance.GetAudioClip("KerbalScienceFoundation/NavInstruments/CommonAudio/outer"));
                             break;
 
                         case 2:
-                            markerAudio.PlayOneShot(GameDatabase.Instance.GetAudioClip("KSFHSI/Sounds/middle"));
+                            aud.markerAudio.PlayOneShot(GameDatabase.Instance.GetAudioClip("KerbalScienceFoundation/NavInstruments/CommonAudio/middle"));
                             break;
 
                         case 3:
-                            markerAudio.PlayOneShot(GameDatabase.Instance.GetAudioClip("KSFHSI/Sounds/inner"));
+                            aud.markerAudio.PlayOneShot(GameDatabase.Instance.GetAudioClip("KerbalScienceFoundation/NavInstruments/CommonAudio/inner"));
                             break;
 
                         default:
@@ -184,7 +174,7 @@ namespace KSFRPMHSI
                         break;
 
                     default:
-                        markerAudio.Stop();
+                        aud.markerAudio.Stop();
                         break;
                 }
 
@@ -192,25 +182,22 @@ namespace KSFRPMHSI
 
                 if (drawUnlit || bcnCode == 0)
                 {
-                    drawMovedImagePortion(mkrbcnMaterial, .75f, 1, 0, 1, screen, new Vector2(.046875f, .0203125f), false); ;
+                    screen = NavUtilLib.Graphics.drawMovedImagePortion(mat.Instance.mkrbcn, .75f, 1, 0, 1, screen, new Vector2(.046875f, .0203125f), false); ;
                 }
                 else
                 {
                     switch (bcnCode)
                     {
                         case 1:
-                            drawMovedImagePortion(mkrbcnMaterial, .5f, .75f, 0, 1, screen, new Vector2(.046875f, .0203125f), false);
-                            //if (!markerAudio.isPlaying) markerAudio.PlayOneShot(GameDatabase.Instance.GetAudioClip("KSFHSI/Sounds/outer"));
+                            screen = NavUtilLib.Graphics.drawMovedImagePortion(mat.Instance.mkrbcn, .5f, .75f, 0, 1, screen, new Vector2(.046875f, .0203125f), false);
                             break;
 
                         case 2:
-                            drawMovedImagePortion(mkrbcnMaterial, .25f, .5f, 0, 1, screen, new Vector2(.046875f, .0203125f), false);
-                            //if (!markerAudio.isPlaying) markerAudio.PlayOneShot(GameDatabase.Instance.GetAudioClip("KSFHSI/Sounds/middle"));
+                            screen = NavUtilLib.Graphics.drawMovedImagePortion(mat.Instance.mkrbcn, .25f, .5f, 0, 1, screen, new Vector2(.046875f, .0203125f), false);
                             break;
 
                         case 3:
-                            drawMovedImagePortion(mkrbcnMaterial, 0f, .25f, 0, 1, screen, new Vector2(.046875f, .0203125f), false);
-                            //if (!markerAudio.isPlaying) markerAudio.PlayOneShot(GameDatabase.Instance.GetAudioClip("KSFHSI/Sounds/inner"));
+                            screen = NavUtilLib.Graphics.drawMovedImagePortion(mat.Instance.mkrbcn, 0f, .25f, 0, 1, screen, new Vector2(.046875f, .0203125f), false);
                             break;
 
                         default:
@@ -220,7 +207,7 @@ namespace KSFRPMHSI
             }
             else
             {
-                drawMovedImagePortion(mkrbcnMaterial, .75f, 1, 0, 1, screen, new Vector2(.046875f, .0203125f), false);
+                screen = NavUtilLib.Graphics.drawMovedImagePortion(mat.Instance.mkrbcn, .75f, 1, 0, 1, screen, new Vector2(.046875f, .0203125f), false);
             }
 
             //find vertical location of pointer
@@ -229,7 +216,7 @@ namespace KSFRPMHSI
             yO = Mathf.Clamp(yO, -0.21875f, 0.21875f); //.7 degrees either direction
             yO += 0.3609375f;
 
-            drawMovedImage(pointerMaterial, screen, new Vector2(0.5f, yO), true);
+            screen = NavUtilLib.Graphics.drawMovedImage(mat.Instance.pointer, screen, new Vector2(0.5f, yO), true,false);
             
             GL.PopMatrix();
 
@@ -259,121 +246,6 @@ namespace KSFRPMHSI
             return 0;
         }
 
-
-
-
-        private static void drawCenterRotatedImage(float headingDeg, Vector2 centerPercent, Material mat, RenderTexture screen, float xOffset, float yOffset)
-        {
-            float w = (float)mat.mainTexture.width / (float)screen.width / 2;
-            float h = (float)mat.mainTexture.height / (float)screen.height / 2;
-
-            headingDeg = (float)NavUtilLib.Utils.makeAngle0to360(headingDeg);
-            headingDeg = (float)NavUtilLib.Utils.CalcRadiansFromDeg(headingDeg);
-
-            Vector2[] corners = new Vector2[4];
-
-            corners[0] = new Vector2(-w + xOffset, -h + yOffset);
-            corners[1] = new Vector2(+w + xOffset, -h + yOffset);
-            corners[2] = new Vector2(+w + xOffset, +h + yOffset);
-            corners[3] = new Vector2(-w + xOffset, +h + yOffset);
-
-            for (int i = 0; i < corners.Count(); i++)
-            {
-                //=COS($K$3)*B2+SIN($K$3)*C2
-                float x = corners[i].x;
-                corners[i].x = (Mathf.Cos(headingDeg) * corners[i].x) + (Mathf.Sin(headingDeg) * corners[i].y);
-
-                //=COS($K$3)*C2-SIN($K$3)*B2
-                corners[i].y = (Mathf.Cos(headingDeg) * corners[i].y) - (Mathf.Sin(headingDeg) * x);
-
-            }
-
-            mat.SetPass(0);
-            GL.LoadOrtho();
-            GL.Color(Color.red);
-            GL.Begin(GL.QUADS);
-
-            GL.TexCoord2(0, 0);
-            GL.Vertex3(centerPercent.x + corners[0].x, centerPercent.y + corners[0].y, 0);
-
-            GL.TexCoord2(1, 0);
-            GL.Vertex3(centerPercent.x + corners[1].x, centerPercent.y + corners[1].y, 0);
-
-            GL.TexCoord2(1, 1);
-            GL.Vertex3(centerPercent.x + corners[2].x, centerPercent.y + corners[2].y, 0);
-
-            GL.TexCoord2(0, 1);
-            GL.Vertex3(centerPercent.x + corners[3].x, centerPercent.y + corners[3].y, 0);
-
-            GL.End();
-        }
-
-        private static void drawMovedImage(Material mat, RenderTexture screen, Vector2 bottomLeftPercent, bool useCenterOfMat)
-        {
-            float w = (float)mat.mainTexture.width / (float)screen.width;
-            float h = (float)mat.mainTexture.height / (float)screen.height;
-
-            if (useCenterOfMat)
-            {
-                bottomLeftPercent.x -= .5f * w;
-                bottomLeftPercent.y -= .5f * h;
-            }
-
-            mat.SetPass(0);
-            GL.LoadOrtho();
-            GL.Color(Color.red);
-            GL.Begin(GL.QUADS);
-
-            GL.TexCoord2(0, 0);
-            GL.Vertex3(bottomLeftPercent.x, bottomLeftPercent.y, 0);
-
-            GL.TexCoord2(0, 1);
-            GL.Vertex3(bottomLeftPercent.x, h + bottomLeftPercent.y, 0);
-
-            GL.TexCoord2(1, 1);
-            GL.Vertex3(w + bottomLeftPercent.x, h + bottomLeftPercent.y, 0);
-
-            GL.TexCoord2(1, 0);
-            GL.Vertex3(w + bottomLeftPercent.x, bottomLeftPercent.y, 0);
-            GL.End();
-        }
-
-        private static void drawMovedImagePortion(Material mat,float bottom, float top, float left, float right, RenderTexture screen, Vector2 bottomLeftPercent, bool useCenterOfMat)
-        {
-            float w = (float)mat.mainTexture.width / (float)screen.width;
-            float h = (float)mat.mainTexture.height / (float)screen.height;
-
-
-            w *= (right - left);
-            h *= (top - bottom);
-
-            if (useCenterOfMat)
-            {
-                bottomLeftPercent.x -= .5f * w;
-                bottomLeftPercent.y -= .5f * h;
-            }
-
-            mat.SetPass(0);
-            GL.LoadOrtho();
-            GL.Color(Color.red);
-            GL.Begin(GL.QUADS);
-
-            GL.TexCoord2(left, bottom);
-            GL.Vertex3(bottomLeftPercent.x, bottomLeftPercent.y, 0);
-
-            GL.TexCoord2(left, top);
-            GL.Vertex3(bottomLeftPercent.x, h + bottomLeftPercent.y, 0);
-
-            GL.TexCoord2(right, top);
-            GL.Vertex3(w + bottomLeftPercent.x, h + bottomLeftPercent.y, 0);
-
-            GL.TexCoord2(right, bottom);
-            GL.Vertex3(w + bottomLeftPercent.x, bottomLeftPercent.y, 0);
-
-            GL.End();
-        }
-        
-
         public string pageAuthor(int screenWidth, int screenHeight)
         {
             Vessel thisVessel = this.vessel;
@@ -390,8 +262,8 @@ namespace KSFRPMHSI
                 "  Glideslope: " + string.Format("{0:F1}", glideSlope) + "°"
             //"  GS Alt MSL: " + Utils.CalcSurfaceAltAtDME((float)dme,Rwy.body,(float)glideSlope,(float)Rwy.altMSL) +"m"
                 + Environment.NewLine +
-                "                                     [@x-4][@y7]" + numberFormatter(FlightGlobals.ship_heading, true) + Environment.NewLine +
-                "   [@x-4][@y4]" + numberFormatter(Rwy.hdg, true) + "                               " + numberFormatter((float)bearing, true) + Environment.NewLine
+                "                                     [@x-4][@y7]" + NavUtilLib.Utils.numberFormatter(FlightGlobals.ship_heading, true) + Environment.NewLine +
+                "   [@x-4][@y4]" + NavUtilLib.Utils.numberFormatter(Rwy.hdg, true) + "                               " + NavUtilLib.Utils.numberFormatter((float)bearing, true) + Environment.NewLine
                 + Environment.NewLine
                 + Environment.NewLine
                 + Environment.NewLine
@@ -404,47 +276,13 @@ namespace KSFRPMHSI
                 + Environment.NewLine
                 + Environment.NewLine
                 + Environment.NewLine
-                + "   [@y16]" + numberFormatter((float)dme/1000f, false) + Environment.NewLine
+                + "   [@y16]" + NavUtilLib.Utils.numberFormatter((float)dme / 1000f, false) + Environment.NewLine
                 + Environment.NewLine
                 + " [@x-5][@y8]               |    Runway    |" + Environment.NewLine
                 + " [@x-5]               | Prev | Next  |";
 
             return output;
         }
-
-        private string numberFormatter(float numToDisplay, bool isHeading)
-        {
-            string output = "";
-
-            int tenths = (int)((numToDisplay * 10) % 10);
-            int ones = (int)Math.Abs(numToDisplay / 1 % 10);
-            int tens = (int)Math.Abs(numToDisplay / 10 % 10);
-            int hundreds = (int)Math.Abs(numToDisplay / 100 % 10);
-
-            if (isHeading)
-            {
-                output = hundreds.ToString() + tens.ToString() + ones.ToString();
-                return output;
-            }
-
-            if (numToDisplay < 100)
-            {
-                if (tens != 0)
-                    output = tens.ToString();
-
-                output += ones.ToString() + "." + tenths.ToString();
-                return output;
-            }
-
-            output = hundreds.ToString() + tens.ToString() + ones.ToString();
-
-            if (numToDisplay > 999.5)
-                output = "999";
-
-
-            return output;
-        }
-
 
         public void ButtonProcessor(int buttonID)
         {
@@ -513,99 +351,11 @@ namespace KSFRPMHSI
                 }
 
             }
-
-
-
-
-
-
-
-            Texture2D hsi_overlay = new Texture2D(640, 640);
-            Texture2D hsi_heading_card = new Texture2D(501, 501);
-            Texture2D hsi_GS_pointer = new Texture2D(640, 24);
-            Texture2D hsi_course_needle = new Texture2D(221, 481);
-            Texture2D hsi_course_deviation_needle = new Texture2D(5, 251);
-            Texture2D hsi_NDB_needle = new Texture2D(15, 501);
-
-            Texture2D hsi_flags = new Texture2D(64, 64);
-
-            Texture2D hsi_mkr_bcn = new Texture2D(175, 180);
-
-            Byte[] arrBytes;
-            arrBytes = KSP.IO.File.ReadAllBytes<KSF_MLS>("overlay.png");
-            hsi_overlay.LoadImage(arrBytes);
-
-            arrBytes = KSP.IO.File.ReadAllBytes<KSF_MLS>("large_heading_card.png");
-            hsi_heading_card.LoadImage(arrBytes);
-
-            arrBytes = KSP.IO.File.ReadAllBytes<KSF_MLS>("gs_pointer.png");
-            hsi_GS_pointer.LoadImage(arrBytes);
-
-            arrBytes = KSP.IO.File.ReadAllBytes<KSF_MLS>("hsi_back.png");
-            hsi_back.LoadImage(arrBytes);
-
-            arrBytes = KSP.IO.File.ReadAllBytes<KSF_MLS>("NDB_needle.png");
-            hsi_NDB_needle.LoadImage(arrBytes);
-
-            arrBytes = KSP.IO.File.ReadAllBytes<KSF_MLS>("course_needle.png");
-            hsi_course_needle.LoadImage(arrBytes);
-
-            arrBytes = KSP.IO.File.ReadAllBytes<KSF_MLS>("course_deviation_needle.png");
-            hsi_course_deviation_needle.LoadImage(arrBytes);
-
-            arrBytes = KSP.IO.File.ReadAllBytes<KSF_MLS>("markerIndicator.png");
-            hsi_mkr_bcn.LoadImage(arrBytes);
-
-            arrBytes = KSP.IO.File.ReadAllBytes<KSF_MLS>("flags.png");
-            hsi_flags.LoadImage(arrBytes);
-
-
-            Shader unlit = Shader.Find("KSP/Alpha/Unlit Transparent");
-
-            overlayMaterial = new Material(unlit);
-            overlayMaterial.color = new Color(1, 1, 1, 1);
-            overlayMaterial.mainTexture = (Texture)hsi_overlay;
-
-            pointerMaterial = new Material(unlit);
-            pointerMaterial.color = new Color(1, 1, 1, 1);
-            pointerMaterial.mainTexture = hsi_GS_pointer;
-
-            headingCardMaterial = new Material(unlit);
-            headingCardMaterial.color = new Color(1, 1, 1, 1);
-            headingCardMaterial.mainTexture = hsi_heading_card;
-
-            NDBneedleMaterial = new Material(unlit);
-            NDBneedleMaterial.color = new Color(1, 1, 1, 1);
-            NDBneedleMaterial.mainTexture = hsi_NDB_needle;
-
-            courseMaterial = new Material(unlit);
-            courseMaterial.color = new Color(1, 1, 1, 1);
-            courseMaterial.mainTexture = hsi_course_needle;
-
-            localizerMaterial = new Material(unlit);
-            localizerMaterial.color = new Color(1, 1, 1, 1);
-            localizerMaterial.mainTexture = hsi_course_deviation_needle;
-
-            mkrbcnMaterial = new Material(unlit);
-            mkrbcnMaterial.color = new Color(1, 1, 1, 1);
-            mkrbcnMaterial.mainTexture = hsi_mkr_bcn;
-
-            flagMaterial = new Material(unlit);
-            flagMaterial.color = new Color(1, 1, 1, 1);
-            flagMaterial.mainTexture = hsi_flags;
-
-
-            markerAudio = audioplayer.AddComponent<AudioSource>();
-            markerAudio.volume = GameSettings.VOICE_VOLUME;
-            markerAudio.pan = 0;
-            markerAudio.dopplerLevel = 0;
-            markerAudio.bypassEffects=true;
-            markerAudio.loop = true;
-
+            aud.initializeAudio();
+            Debug.Log("MLS: Loading Materials...");
+            mat.loadMaterials();
+            Debug.Log("MLS: Done!");
             doneLoading = true;
         }
-
-       
-
     }
 }
