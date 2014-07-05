@@ -1,9 +1,0 @@
-C:\Users\Daniel\Desktop\KerbalScienceFoundation - Copy\KSF_NavInstruments\RPMHSI\RPMHSI\bin\Debug\RPMHSI.dll
-C:\Users\Daniel\Desktop\KerbalScienceFoundation - Copy\KSF_NavInstruments\RPMHSI\RPMHSI\bin\Debug\RPMHSI.pdb
-C:\Users\Daniel\Desktop\KerbalScienceFoundation - Copy\KSF_NavInstruments\RPMHSI\RPMHSI\bin\Debug\Assembly-CSharp.dll
-C:\Users\Daniel\Desktop\KerbalScienceFoundation - Copy\KSF_NavInstruments\RPMHSI\RPMHSI\bin\Debug\NavUtilities.dll
-C:\Users\Daniel\Desktop\KerbalScienceFoundation - Copy\KSF_NavInstruments\RPMHSI\RPMHSI\bin\Debug\Toolbar.dll
-C:\Users\Daniel\Desktop\KerbalScienceFoundation - Copy\KSF_NavInstruments\RPMHSI\RPMHSI\bin\Debug\UnityEngine.dll
-C:\Users\Daniel\Desktop\KerbalScienceFoundation - Copy\KSF_NavInstruments\RPMHSI\RPMHSI\obj\Debug\RPMHSI.dll
-C:\Users\Daniel\Desktop\KerbalScienceFoundation - Copy\KSF_NavInstruments\RPMHSI\RPMHSI\obj\Debug\RPMHSI.pdb
-C:\Users\Daniel\Desktop\KerbalScienceFoundation - Copy\KSF_NavInstruments\RPMHSI\RPMHSI\obj\Debug\RPMHSI.csprojResolveAssemblyReference.cache
