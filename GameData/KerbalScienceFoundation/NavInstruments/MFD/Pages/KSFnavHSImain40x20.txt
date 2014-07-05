@@ -1,0 +1,20 @@
+=====Horizontal Situation Indicator=====
+  Runway: KSC 09             G/S: 3.0°
+                                     [@x-4][@y7]090
+   [@x-4][@y4]089                               059
+
+
+
+
+
+
+
+
+
+
+
+
+   [@y16]54.2
+
+ [@x-5][@y8]|    Runway    |  Glideslope  |
+ [@x-5]|  Prev | Next | Prev | Next  |

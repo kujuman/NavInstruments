@@ -1,0 +1,14 @@
+PAGE
+	{
+		button = button_A
+		name = KSF_NAV_HSI
+		text = KerbalScienceFoundation/NavInstruments/MFD/Pages/KSFnavHSImain40x20.txt
+		textureURL = Hyomoto/MFD/images/genericBg
+		textureOverlayURL = Hyomoto/MFD/images/genericOverlay
+		//textOverlay = Hyomoto/MFD/pages/menuOverlayBase.txt
+		disableSwitchingTo = btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8, btn9, btn10, up, down, enter, escape, home
+		CONTEXTREDIRECT
+		{
+			redirect = home,   menuDefault
+		}
+	}
