@@ -1,0 +1,8 @@
+C:\Users\Daniel\Desktop\KerbalScienceFoundation - Copy\KSF_NavInstruments\HSI\HSI\obj\Debug\HSI.csprojResolveAssemblyReference.cache
+C:\Users\Daniel\Desktop\KerbalScienceFoundation - Copy\KSF_NavInstruments\HSI\HSI\bin\Debug\Assembly-CSharp.dll
+C:\Users\Daniel\Desktop\KerbalScienceFoundation - Copy\KSF_NavInstruments\HSI\HSI\bin\Debug\Toolbar.dll
+C:\Users\Daniel\Desktop\KerbalScienceFoundation - Copy\KSF_NavInstruments\HSI\HSI\bin\Debug\UnityEngine.dll
+C:\Users\Daniel\Desktop\KerbalScienceFoundation - Copy\KSF_NavInstruments\HSI\HSI\bin\Debug\NavUtilities.dll
+C:\Users\Daniel\Desktop\KerbalScienceFoundation - Copy\KSF_NavInstruments\HSI\HSI\bin\Debug\NavUtilities.pdb
+C:\Users\Daniel\Desktop\KerbalScienceFoundation - Copy\KSF_NavInstruments\HSI\HSI\obj\Debug\NavUtilities.dll
+C:\Users\Daniel\Desktop\KerbalScienceFoundation - Copy\KSF_NavInstruments\HSI\HSI\obj\Debug\NavUtilities.pdb
