@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="ConfigLoader.cs" />
     <Compile Include="GlobalVariables.cs" />
+    <Compile Include="GlobalV_DisplayData.cs" />
     <Compile Include="GraphicUtils.cs" />
     <Compile Include="NavUtilLibHelper.cs" />
     <Compile Include="zHSIController.cs" />

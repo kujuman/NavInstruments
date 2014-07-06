@@ -49,7 +49,6 @@ namespace NavUtilLib
 
                 gsList.Add(f);
             }
-
             return gsList;
         }
 

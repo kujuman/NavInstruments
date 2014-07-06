@@ -179,5 +179,20 @@ namespace NavUtilLib
         }
 
         #endregion
+
+       public static int indexChecker(int index, int maxIndex, int minIndex)
+       {
+           if (maxIndex < index)
+           {
+               index = minIndex;
+           }
+           else if (minIndex > index)
+           {
+               index = maxIndex;
+           }
+
+           return index;
+       }
+    
     }
 }

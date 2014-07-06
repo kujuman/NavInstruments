@@ -32,8 +32,6 @@ namespace NavUtilLib
                 corners[i].y = (Mathf.Cos(headingDeg) * corners[i].y) - (Mathf.Sin(headingDeg) * x);
             }
 
-            Debug.Log(".4");
-
             mat.SetPass(0);
             GL.LoadOrtho();
             GL.Color(Color.red);
