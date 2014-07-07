@@ -11,44 +11,32 @@ namespace NavUtilLib
         public static class Settings
         {
             public static string settingsFileURL = "GameData/KerbalScienceFoundation/NavInstruments/settings.cfg";
+
+            public static Rect hsiPosition = new Rect(100,100,300,300);
+
             public static bool navAidsIsLoaded = false;
 
             public static void loadNavAids()
             {
                 Debug.Log("NavUtilLib: Loading NavAid database...");
                 FlightData.rwyList.Clear();
-                Debug.Log("_+");
                 FlightData.rwyList = ConfigLoader.GetRunwayListFromConfig(settingsFileURL);
-                Debug.Log("1");
                 FlightData.gsList.Clear();
                 FlightData.gsList = ConfigLoader.GetGlideslopeListFromConfig(settingsFileURL);
 
-                Debug.Log("2");
-
                 DirectoryInfo folder = new DirectoryInfo(KSPUtil.ApplicationRootPath + "GameData/KerbalScienceFoundation/NavInstruments/Runways");
-
-                Debug.Log("3");
 
                 if (folder.Exists)
                 {
-                    Debug.Log("4");
-
                     FileInfo[] addlNavAidFiles = folder.GetFiles("*_rwy.cfg");
-
-                    Debug.Log("5");
 
                     foreach (FileInfo finfo in addlNavAidFiles)
                     {
-                        Debug.Log("A");
-
                         FlightData.rwyList.AddRange(NavUtilLib.ConfigLoader.GetRunwayListFromConfig("GameData/KerbalScienceFoundation/NavInstruments/Runways/" + finfo.Name));
-                        Debug.Log("B");
                         FlightData.gsList.AddRange(NavUtilLib.ConfigLoader.GetGlideslopeListFromConfig("GameData/KerbalScienceFoundation/NavInstruments/Runways/" + finfo.Name));
-                        Debug.Log("C");
                     }
                     
                 }
-                Debug.Log("6");
                 navAidsIsLoaded = true;
             }
         }
@@ -132,8 +120,6 @@ namespace NavUtilLib
             public static void loadMaterials()
             {
                 Debug.Log("NavUtilLib: Updating materials...");
-
-                Debug.Log("loadMaterials()");
                 string texName;
 
                 texName = "hsi_overlay.png";
@@ -167,15 +153,33 @@ namespace NavUtilLib
             }
         }
 
-        public static class Audio
+        public class Audio
         {
-            public static bool isLoaded = false;
+            private static Audio instance;
+            private Audio() { }
 
-            public static GameObject audioplayer = new GameObject();
-            public static AudioSource markerAudio = new AudioSource();
+            public static Audio Instance
+            {
+                get
+                {
+                    if(instance == null)
+                    {
+                        instance = new Audio();
+                    }
+                    return instance;
+                }
+            }
+
+            public static bool isLoaded = false;
+            
+            public static GameObject audioplayer; 
+            public static AudioSource markerAudio; 
 
             public static void initializeAudio()
             {
+                audioplayer = new GameObject();
+                markerAudio = new AudioSource();
+
                 Debug.Log("NavUtilLib: InitializingAudio...");
                 markerAudio = audioplayer.AddComponent<AudioSource>();
                 markerAudio.volume = GameSettings.VOICE_VOLUME;

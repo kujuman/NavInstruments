@@ -42,14 +42,9 @@ namespace NavUtilLib
                 return 0;
             }
 
-            public static bool DrawHSI(RenderTexture screen, float aspectRatio)
+            public static void DrawHSI(RenderTexture screen, float aspectRatio)
             {
-                //get up to date nav information
-                if (var.FlightData.GetLastNavUpdateUT() + 0.05 > Planetarium.GetUniversalTime()) //nav data is up to date
-                    ;
-                else
-                    var.FlightData.updateNavigationData();
-
+                var.FlightData.updateNavigationData();
 
                 locFlag = gsFlag = bcFlag = false;
 
@@ -60,10 +55,12 @@ namespace NavUtilLib
                 {
                     bcFlag = true;
                 }
+
                 GL.PushMatrix();
 
                 GL.LoadPixelMatrix(0, screen.width, screen.height, 0);
                 GL.Viewport(new Rect(0, 0, screen.width, screen.height));
+                GL.Clear(true, true, Color.black);
 
                 screen = NavUtilLib.Graphics.drawMovedImage(var.Materials.Instance.back, screen, new Vector2(0, 0), false, true);
                 screen = NavUtilLib.Graphics.drawCenterRotatedImage(360 - FlightGlobals.ship_heading, new Vector2(.5f, .5f), var.Materials.Instance.headingCard, screen, 0, 0);
@@ -87,12 +84,11 @@ namespace NavUtilLib
                 }
                 else //draw flag
                 {
-                    screen = NavUtilLib.Graphics.drawMovedImagePortion(var.Materials.Instance.localizer, .34375f, .65625f, 0, 1, screen, new Vector2(.821875f, 0.2046875f), false);
+                    screen = NavUtilLib.Graphics.drawMovedImagePortion(var.Materials.Instance.flag, .34375f, .65625f, 0, 1, screen, new Vector2(.821875f, 0.2046875f), false);
                 }
 
 
                 screen = NavUtilLib.Graphics.drawMovedImage(var.Materials.Instance.overlay, screen, new Vector2(0, 0), false, false);
-
                 //marker beacons
                 //imageBox takes bottom x, 
                 if (FlightData.dme < 30000)
@@ -130,7 +126,6 @@ namespace NavUtilLib
                                 break;
                         }
                     }
-
 
                     var deltaTime = Planetarium.GetUniversalTime() - timer;
 
@@ -198,7 +193,6 @@ namespace NavUtilLib
                 screen = NavUtilLib.Graphics.drawMovedImage(var.Materials.Instance.pointer, screen, new Vector2(0.5f, yO), true, false);
 
                 GL.PopMatrix();
-                return true;
             }
         }
 

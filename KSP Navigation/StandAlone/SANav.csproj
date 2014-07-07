@@ -8,10 +8,11 @@
     <ProjectGuid>{837BDF09-DB12-45B3-B32A-0F557BAD2856}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>KSF_NavInstruments</RootNamespace>
-    <AssemblyName>KSF_Nav</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <RootNamespace>NavUtilGUI</RootNamespace>
+    <AssemblyName>NavUtilGUI</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -35,23 +36,32 @@
       <HintPath>..\..\..\References\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="FerramAerospaceResearch">
+      <HintPath>..\..\..\References\FerramAerospaceResearch.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Xml" />
+    <Reference Include="Toolbar">
+      <HintPath>..\..\..\References\Toolbar.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\References\UnityEngine.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConfigLoader.cs" />
-    <Compile Include="Main.cs" />
+    <Compile Include="DisplayHSI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Texture Loader.cs" />
+    <Compile Include="ToolbarIntegration.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NavUtilLib\NavUtilLib.csproj">
+      <Project>{647510f3-2dff-43be-9b31-86d83e540bb9}</Project>
+      <Name>NavUtilLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetPath)" "C:\Users\Daniel\Desktop\KerbalScienceFoundation\NavInstruments"</PostBuildEvent>
+    <PostBuildEvent>copy "$(TargetPath)" "C:\Users\Daniel\OneDrive\Kerbal Space Program\GameData\KerbalScienceFoundation\NavInstruments"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

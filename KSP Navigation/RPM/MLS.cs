@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using UnityEngine;
 using KSP;
 using NavUtilLib;
@@ -14,12 +13,15 @@ namespace KSFRPMHSI
 
         public bool DrawMLS(RenderTexture screen, float aspectRatio)
         {
-            return var.DisplayData.DrawHSI(screen, aspectRatio);
+            var.DisplayData.DrawHSI(screen, aspectRatio);
+
+            return true;
         }
 
         public string pageAuthor(int screenWidth, int screenHeight)
         {
-            if(!(var.FlightData.GetLastNavUpdateUT() + 0.05 > Planetarium.GetUniversalTime()))
+            //if(!(var.FlightData.GetLastNavUpdateUT() + 0.05 > Planetarium.GetUniversalTime()))
+
                 var.FlightData.updateNavigationData();
 
             string output;
@@ -91,7 +93,7 @@ namespace KSFRPMHSI
             if (!var.Materials.isLoaded)
                 var.Materials.loadMaterials();
 
-            if (!var.Audio.isLoaded)
+            //if (!var.Audio.isLoaded)
                 var.Audio.initializeAudio();
 
             Debug.Log("MLS: Systems started successfully!");
