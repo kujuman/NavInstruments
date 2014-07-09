@@ -12,7 +12,15 @@ namespace NavUtilLib
         {
             public static string settingsFileURL = "GameData/KerbalScienceFoundation/NavInstruments/settings.cfg";
 
-            public static Rect hsiPosition = new Rect(100,100,300,300);
+
+
+            public static Rect hsiPosition = new Rect(100,100,640,640);
+            public static float hsiGUIscale = 0.5f;
+            public static bool hsiState = false;
+
+            public static Rect settingsGUI = new Rect(100,50,250,150);
+
+
 
             public static bool navAidsIsLoaded = false;
 
@@ -116,6 +124,7 @@ namespace NavUtilLib
             public Material mkrbcn = null;
             public Material flag = null;
             public Material back = null;
+            public Material whiteFont = null;
 
             public static void loadMaterials()
             {
@@ -149,6 +158,9 @@ namespace NavUtilLib
                 texName = "hsi_back.png";
                 Materials.Instance.back = Graphics.loadMaterial(texName, Materials.Instance.back, 32, 32);
 
+                texName = "white_font.png";
+                Materials.Instance.whiteFont = Graphics.loadMaterial(texName, Materials.Instance.whiteFont, 256, 256);
+                 
                 isLoaded = true;
             }
         }

@@ -48,6 +48,8 @@
     <Compile Include="GlobalV_DisplayData.cs" />
     <Compile Include="GraphicUtils.cs" />
     <Compile Include="NavUtilLibHelper.cs" />
+    <Compile Include="SettingsGUI.cs" />
+    <Compile Include="TextWriter.cs" />
     <Compile Include="zHSIController.cs" />
     <Compile Include="Runway.cs" />
     <Compile Include="zToolbarHandler.cs" />

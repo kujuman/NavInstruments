@@ -10,9 +10,7 @@ class btnCreate : MonoBehaviour
 {
     private IButton b;
 
-    private bool HSIguiState = false;
-
-    private GUIInstruments.HSI_Display hsiD;
+    public static bool HSIguiState = false;
 
     private Rect windowPosition;
     private RenderTexture rt;
@@ -45,7 +43,7 @@ class btnCreate : MonoBehaviour
         PopupMenuDrawable menu = new PopupMenuDrawable();
 
         IButton option1 = menu.AddOption("Nav Utilities Options");
-        option1.OnClick += (e2) => Debug.Log("menu option 1 clicked");
+        option1.OnClick += (e2) => NavUtilLib.SettingsGUI.startSettingsGUI();
 
         if (HSIguiState)
         {
@@ -92,6 +90,7 @@ class btnCreate : MonoBehaviour
     internal void OnDestroy()
     {
         b.Destroy();
+        
     }
 
 
@@ -100,8 +99,6 @@ class btnCreate : MonoBehaviour
         if (state)
         {
             RenderingManager.AddToPostDrawQueue(3, OnDraw);
-
-            windowPosition = NavUtilLib.GlobalVariables.Settings.hsiPosition;
 
             rt = new RenderTexture(640, 640, 24, RenderTextureFormat.ARGB32);
 
@@ -123,24 +120,34 @@ class btnCreate : MonoBehaviour
         {
             state = false;
             RenderingManager.RemoveFromPostDrawQueue(3, OnDraw); //close the GUI
-            NavUtilLib.GlobalVariables.Settings.hsiPosition = windowPosition;
+            NavUtilLib.GlobalVariables.Settings.hsiPosition.x = windowPosition.x;
+            NavUtilLib.GlobalVariables.Settings.hsiPosition.y = windowPosition.y;
         }
     }
 
     private void OnDraw()
     {
-        if ((windowPosition.xMin + windowPosition.width) < 20) windowPosition.xMin = 20 - windowPosition.width;
-        if (windowPosition.yMin + windowPosition.height < 20) windowPosition.yMin = 20 - windowPosition.height;
-        if (windowPosition.xMin > Screen.width - 20) windowPosition.xMin = Screen.width - 20;
-        if (windowPosition.yMin > Screen.height - 20) windowPosition.yMin = Screen.height - 20;
-        windowPosition = GUI.Window(1, windowPosition, OnWindow, "Horizontal Situation Indicator");
+        //Debug.Log("HSI: OnDraw()");
+        if (CameraManager.Instance.currentCameraMode == CameraManager.CameraMode.Flight)
+        {
+            if ((windowPosition.xMin + windowPosition.width) < 20) windowPosition.xMin = 20 - windowPosition.width;
+            if (windowPosition.yMin + windowPosition.height < 20) windowPosition.yMin = 20 - windowPosition.height;
+            if (windowPosition.xMin > Screen.width - 20) windowPosition.xMin = Screen.width - 20;
+            if (windowPosition.yMin > Screen.height - 20) windowPosition.yMin = Screen.height - 20;
+
+            windowPosition = new Rect(windowPosition.x,
+         windowPosition.y,
+         (int)(NavUtilLib.GlobalVariables.Settings.hsiPosition.width * NavUtilLib.GlobalVariables.Settings.hsiGUIscale),
+         (int)(NavUtilLib.GlobalVariables.Settings.hsiPosition.height * NavUtilLib.GlobalVariables.Settings.hsiGUIscale));
+
+            windowPosition = GUI.Window(1, windowPosition, OnWindow, "Horizontal Situation Indicator");
+
+        }
+        //Debug.Log(windowPosition.ToString());
     }
 
     private void DrawGauge(RenderTexture screen)
     {
-                        if(!NavUtilLib.GlobalVariables.Materials.isLoaded) NavUtilLib.GlobalVariables.Materials.loadMaterials();
-                        if (!NavUtilLib.GlobalVariables.Settings.navAidsIsLoaded) NavUtilLib.GlobalVariables.Settings.loadNavAids();
-                NavUtilLib.GlobalVariables.Audio.initializeAudio();
                 NavUtilLib.GlobalVariables.FlightData.updateNavigationData();
 
                 RenderTexture pt = RenderTexture.active;
@@ -150,17 +157,29 @@ class btnCreate : MonoBehaviour
 
                 NavUtilLib.GlobalVariables.DisplayData.DrawHSI(screen,1);
 
+        //write text to screen
+//write runway info
+
+                NavUtilLib.TextWriter.addTextToRT(screen,"Runway: " + NavUtilLib.GlobalVariables.FlightData.selectedRwy.ident,new Vector2(20,screen.height - 40),NavUtilLib.GlobalVariables.Materials.Instance.whiteFont,.64f);
+                NavUtilLib.TextWriter.addTextToRT(screen,"Glideslope: " + string.Format("{0:F1}", NavUtilLib.GlobalVariables.FlightData.selectedGlideSlope) +"°  Elevation: "+ string.Format("{0:F0}",NavUtilLib.GlobalVariables.FlightData.selectedRwy.altMSL)+"m", new Vector2(20, screen.height - 64), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
+
+                NavUtilLib.TextWriter.addTextToRT(screen, NavUtilLib.Utils.numberFormatter((float)NavUtilLib.Utils.makeAngle0to360(FlightGlobals.ship_heading),true).ToString(), new Vector2(584, screen.height - 102), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
+                NavUtilLib.TextWriter.addTextToRT(screen, NavUtilLib.Utils.numberFormatter((float)NavUtilLib.Utils.makeAngle0to360(NavUtilLib.GlobalVariables.FlightData.bearing),true).ToString(), new Vector2(584, screen.height - 131), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
+                NavUtilLib.TextWriter.addTextToRT(screen, NavUtilLib.Utils.numberFormatter((float)NavUtilLib.Utils.makeAngle0to360(NavUtilLib.GlobalVariables.FlightData.selectedRwy.hdg),true).ToString(), new Vector2(35, screen.height - 124), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
+                NavUtilLib.TextWriter.addTextToRT(screen, NavUtilLib.Utils.numberFormatter((float)NavUtilLib.GlobalVariables.FlightData.dme/1000,false).ToString(), new Vector2(45, screen.height - 563), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
+
+
+
                 RenderTexture.active = pt;
     }
 
     private void OnWindow(int WindowID)
     {
-        if (CameraManager.Instance.currentCameraMode == CameraManager.CameraMode.Flight)
-        {
+        //Debug.Log("HSI: OnWindow()");
+
             DrawGauge(rt);
-            GUI.DrawTexture(new Rect(0, 0, NavUtilLib.GlobalVariables.Settings.hsiPosition.width,NavUtilLib.GlobalVariables.Settings.hsiPosition.height), rt, ScaleMode.ScaleToFit);
+            GUI.DrawTexture(new Rect(0, 0, windowPosition.width,windowPosition.height), rt, ScaleMode.ScaleToFit);
             GUI.DragWindow();
-        }
     }
 
 
