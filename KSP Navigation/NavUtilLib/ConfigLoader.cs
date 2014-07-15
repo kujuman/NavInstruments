@@ -35,6 +35,34 @@ namespace NavUtilLib
             return runwayList;
         }
 
+        public static void WriteCustomRunwaysToConfig(System.Collections.Generic.List<Runway> runwayList, string fileName)
+        {
+            ConfigNode runways = new ConfigNode();
+                foreach (Runway r in runwayList)
+                {
+                    ConfigNode rN = new ConfigNode();
+
+                    rN.name = "Runway";
+
+                    rN.AddValue("ident", r.ident);
+                    rN.AddValue("hdg",r.hdg);
+                    rN.AddValue("body", r.body);
+                    rN.AddValue("altMSL", r.altMSL);
+                    rN.AddValue("gsLatitude", r.gsLatitude);
+                    rN.AddValue("gsLongitude", r.gsLongitude);
+                    rN.AddValue("locLatitude", r.locLatitude);
+                    rN.AddValue("locLongitude", r.locLongitude);
+
+                    rN.AddValue("outerMarkerDist", r.outerMarkerDist);
+                    rN.AddValue("middleMarkerDist", r.middleMarkerDist);
+                    rN.AddValue("innerMarkerDist", r.innerMarkerDist);
+
+                    runways.AddNode(rN);
+                }
+
+            runways.Save(KSPUtil.ApplicationRootPath + "GameData/KerbalScienceFoundation/NavInstruments/Runways/" + fileName,"CustomRunways");
+        }
+
         public static System.Collections.Generic.List<float> GetGlideslopeListFromConfig(string sSettingURL)
         {
             System.Collections.Generic.List<float> gsList = new System.Collections.Generic.List<float>();

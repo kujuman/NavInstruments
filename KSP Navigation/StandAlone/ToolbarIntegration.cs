@@ -10,7 +10,7 @@ class btnCreate : MonoBehaviour
 {
     private IButton b;
 
-    public static bool HSIguiState = false;
+    //public static bool HSIguiState = false;
 
     private Rect windowPosition;
     private RenderTexture rt;
@@ -45,7 +45,7 @@ class btnCreate : MonoBehaviour
         IButton option1 = menu.AddOption("Nav Utilities Options");
         option1.OnClick += (e2) => NavUtilLib.SettingsGUI.startSettingsGUI();
 
-        if (HSIguiState)
+        if (NavUtilLib.GlobalVariables.Settings.hsiState)
         {
             IButton option2 = menu.AddOption("Close HSI Window");
             option2.OnClick += (e2) => displayHSI();
@@ -56,6 +56,9 @@ class btnCreate : MonoBehaviour
             option2.OnClick += (e2) => displayHSI();
         }
 
+        IButton option3 = menu.AddOption("Custom Runways");
+        option3.OnClick += (e2) => NavUtilLib.GlobalVariables.Settings.rE.startGUI();
+
         menu.OnAnyOptionClicked += () => destroyPopupMenu(button);
 
         button.Drawable = menu;
@@ -63,18 +66,18 @@ class btnCreate : MonoBehaviour
 
     private void displayHSI()
     {
-        if(!HSIguiState)
+        if (!NavUtilLib.GlobalVariables.Settings.hsiState)
         {
             
             Activate(true);
 
-            HSIguiState = true;
+            NavUtilLib.GlobalVariables.Settings.hsiState = true;
         }
         else
         {
             Activate(false);
 
-            HSIguiState = false;
+            NavUtilLib.GlobalVariables.Settings.hsiState = false;
         }
     }
 

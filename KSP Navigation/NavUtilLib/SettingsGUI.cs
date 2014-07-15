@@ -70,7 +70,11 @@ namespace NavUtilLib
             GUI.Label(new Rect(5, 75, 115, 25), "HSI GUI scale");
 
             if (GUI.Button(new Rect(130, 75, 100, 25), "Default Scale"))
+            {
                 NavUtilLib.GlobalVariables.Settings.hsiGUIscale = 0.5f;
+
+
+            }
 
             NavUtilLib.GlobalVariables.Settings.hsiGUIscale = GUI.HorizontalSlider(new Rect(5, 105, 240, 30),NavUtilLib.GlobalVariables.Settings.hsiGUIscale, 0.1f, 1.0f);
 

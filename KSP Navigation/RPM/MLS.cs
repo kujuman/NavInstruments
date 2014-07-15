@@ -11,13 +11,40 @@ namespace KSFRPMHSI
     {
         bool doneLoading = false;
 
+        [KSPField(isPersistant = false)]
+        int btnPrevGS = 1;
+
+        [KSPField(isPersistant = false)]
+        int btnPrevRwy = 5;
+
+        [KSPField(isPersistant = false)]
+        int btnNextGS = 0;
+
+        [KSPField(isPersistant = false)]
+        int btnNextRwy = 6;
+
+        [KSPField(isPersistant = false)]
+        int btnDefaultRwyGS = 3;
+
         public bool DrawMLS(RenderTexture screen, float aspectRatio)
         {
+            NavUtilLib.GlobalVariables.FlightData.updateNavigationData();
+
             var.DisplayData.DrawHSI(screen, aspectRatio);
+
+
+            NavUtilLib.TextWriter.addTextToRT(screen, "Runway: " + NavUtilLib.GlobalVariables.FlightData.selectedRwy.ident, new Vector2(20, screen.height - 40), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
+            NavUtilLib.TextWriter.addTextToRT(screen, "Glideslope: " + string.Format("{0:F1}", NavUtilLib.GlobalVariables.FlightData.selectedGlideSlope) + "°  Elevation: " + string.Format("{0:F0}", NavUtilLib.GlobalVariables.FlightData.selectedRwy.altMSL) + "m", new Vector2(20, screen.height - 64), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
+
+            NavUtilLib.TextWriter.addTextToRT(screen, NavUtilLib.Utils.numberFormatter((float)NavUtilLib.Utils.makeAngle0to360(FlightGlobals.ship_heading), true).ToString(), new Vector2(584, screen.height - 102), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
+            NavUtilLib.TextWriter.addTextToRT(screen, NavUtilLib.Utils.numberFormatter((float)NavUtilLib.Utils.makeAngle0to360(NavUtilLib.GlobalVariables.FlightData.bearing), true).ToString(), new Vector2(584, screen.height - 131), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
+            NavUtilLib.TextWriter.addTextToRT(screen, NavUtilLib.Utils.numberFormatter((float)NavUtilLib.Utils.makeAngle0to360(NavUtilLib.GlobalVariables.FlightData.selectedRwy.hdg), true).ToString(), new Vector2(35, screen.height - 124), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
+            NavUtilLib.TextWriter.addTextToRT(screen, NavUtilLib.Utils.numberFormatter((float)NavUtilLib.GlobalVariables.FlightData.dme / 1000, false).ToString(), new Vector2(45, screen.height - 563), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
 
             return true;
         }
 
+        [Obsolete("Text now rendered on display in DrawMLS()")]
         public string pageAuthor(int screenWidth, int screenHeight)
         {
             //if(!(var.FlightData.GetLastNavUpdateUT() + 0.05 > Planetarium.GetUniversalTime()))
@@ -54,33 +81,35 @@ namespace KSFRPMHSI
 
         public void ButtonProcessor(int buttonID)
         {
-            if (buttonID == 5)
+            if (buttonID == btnPrevRwy)
             {
                 var.FlightData.rwyIdx--;
             }
-            if (buttonID == 6)
+            if (buttonID == btnNextRwy)
             {
                 var.FlightData.rwyIdx++;
             }
-            if (buttonID == 1)
+            if (buttonID == btnPrevGS)
             {
                 var.FlightData.gsIdx--;
             }
-            if (buttonID == 0)
+            if (buttonID == btnNextGS)
             {
                 var.FlightData.gsIdx++;
             }
-            if (buttonID == 2) //print coordinates on Debug console
-            {
-                var v = var.FlightData.currentVessel;
-                var r = var.FlightData.selectedRwy;
-                Debug.Log("Lat: " + v.latitude + " Lon: " + v.longitude + " GCD: " + NavUtilLib.Utils.CalcGreatCircleDistance(v.latitude, v.longitude, r.gsLatitude, r.gsLongitude, r.body));
-            }
+            //if (buttonID == 2) //print coordinates on Debug console
+            //{
+            //    var v = var.FlightData.currentVessel;
+            //    var r = var.FlightData.selectedRwy;
+            //    Debug.Log("Lat: " + v.latitude + " Lon: " + v.longitude + " GCD: " + NavUtilLib.Utils.CalcGreatCircleDistance(v.latitude, v.longitude, r.gsLatitude, r.gsLongitude, r.body));
+            //}
+
+            Debug.Log("ButtonID: " + buttonID);
 
             var.FlightData.rwyIdx = Utils.indexChecker(var.FlightData.rwyIdx, var.FlightData.rwyList.Count - 1, 0);
             var.FlightData.gsIdx = Utils.indexChecker(var.FlightData.gsIdx, var.FlightData.gsList.Count - 1, 0);
 
-            if (buttonID == 3)
+            if (buttonID == btnDefaultRwyGS)
                 var.FlightData.gsIdx = var.FlightData.rwyIdx = 0; //"Back" Key will return the HSI to default runway and GS
         }
 

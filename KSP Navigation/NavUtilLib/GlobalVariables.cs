@@ -18,9 +18,11 @@ namespace NavUtilLib
             public static float hsiGUIscale = 0.5f;
             public static bool hsiState = false;
 
-            public static Rect settingsGUI = new Rect(100,50,250,150);
+            public static Rect settingsGUI = new Rect(100,50,250,130);
 
-
+            public static Rect rwyEditorGUI = new Rect(50, 50, 450, 300);
+            public static NavUtilGUI.RunwaysEditor rE = new NavUtilGUI.RunwaysEditor();
+            public static bool rwyEditorState = false;
 
             public static bool navAidsIsLoaded = false;
 
@@ -32,6 +34,8 @@ namespace NavUtilLib
                 FlightData.gsList.Clear();
                 FlightData.gsList = ConfigLoader.GetGlideslopeListFromConfig(settingsFileURL);
 
+                FlightData.customRunways.Clear();
+
                 DirectoryInfo folder = new DirectoryInfo(KSPUtil.ApplicationRootPath + "GameData/KerbalScienceFoundation/NavInstruments/Runways");
 
                 if (folder.Exists)
@@ -40,11 +44,19 @@ namespace NavUtilLib
 
                     foreach (FileInfo finfo in addlNavAidFiles)
                     {
+                        if(finfo.Name == "custom_rwy.cfg")
+                        {
+                            FlightData.customRunways.AddRange(NavUtilLib.ConfigLoader.GetRunwayListFromConfig("GameData/KerbalScienceFoundation/NavInstruments/Runways/" + finfo.Name));
+                            Debug.Log("Found custom_rwy.cfg with "+ FlightData.customRunways.Count +" runway definitions");
+                            
+                        }
+
                         FlightData.rwyList.AddRange(NavUtilLib.ConfigLoader.GetRunwayListFromConfig("GameData/KerbalScienceFoundation/NavInstruments/Runways/" + finfo.Name));
                         FlightData.gsList.AddRange(NavUtilLib.ConfigLoader.GetGlideslopeListFromConfig("GameData/KerbalScienceFoundation/NavInstruments/Runways/" + finfo.Name));
                     }
                     
                 }
+
                 navAidsIsLoaded = true;
             }
         }
@@ -56,6 +68,9 @@ namespace NavUtilLib
 
             public static List<float> gsList = new List<float>();
             public static int gsIdx;
+
+            public static List<Runway> customRunways = new List<Runway>();
+            public static int cRwyIdx;
 
             public static Runway selectedRwy;
             public static float selectedGlideSlope;

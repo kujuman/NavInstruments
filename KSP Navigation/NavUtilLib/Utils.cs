@@ -104,6 +104,23 @@ namespace NavUtilLib
 
             return c * FlightGlobals.Bodies.Find(body => body.name == bodyName).Radius;
         }
+
+        public static Vector2d CalcCoordinatesFromInitialPointBearingDistance(Vector2d initPoint, double bearingDeg, double distMeters, double bodyRadius)
+        {
+            var φ1 = initPoint.x;
+            var λ1 = initPoint.y;
+
+            bearingDeg = makeAngle0to360(bearingDeg);
+
+            bearingDeg = CalcRadiansFromDeg(bearingDeg);
+
+            var φ2 = Math.Asin(Math.Sin(φ1) * Math.Cos(distMeters / bodyRadius) +
+                    Math.Cos(φ1) * Math.Sin(distMeters / bodyRadius) * Math.Cos(bearingDeg));
+            var λ2 = λ1 + Math.Atan2(Math.Sin(bearingDeg) * Math.Sin(distMeters / bodyRadius) * Math.Cos(φ1),
+                                     Math.Cos(distMeters / bodyRadius) - Math.Sin(φ1) * Math.Sin(φ2));
+
+            return new Vector2d(φ2, λ2);
+        }
         #endregion
 
 
