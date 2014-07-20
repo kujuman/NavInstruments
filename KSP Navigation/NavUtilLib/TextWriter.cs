@@ -61,7 +61,7 @@ namespace NavUtilLib
         {
             switch (character)
             {
-                    //row 1
+                //row 1
                 case 'A':
                     return new Rect(0, 210, 25, 50);
 
@@ -69,7 +69,7 @@ namespace NavUtilLib
                     return new Rect(25, 210, 25, 50);
 
                 case 'C':
-                    return new Rect(50, 210, 25,50);
+                    return new Rect(50, 210, 25, 50);
 
                 case 'D':
                     return new Rect(75, 210, 25, 50);
@@ -93,7 +93,7 @@ namespace NavUtilLib
                     return new Rect(225, 210, 25, 50);
 
 
-                    //row 2
+                //row 2
                 case 'K':
                     return new Rect(0, 160, 25, 50);
 
@@ -114,7 +114,7 @@ namespace NavUtilLib
 
                 case 'Q':
                     return new Rect(150, 160, 25, 50);
-                
+
                 case 'R':
                     return new Rect(175, 160, 25, 50);
 
@@ -124,7 +124,7 @@ namespace NavUtilLib
                 case 'T':
                     return new Rect(225, 160, 25, 50);
 
-                    //row 3
+                //row 3
 
                 case 'U':
                     return new Rect(0, 110, 25, 50);
@@ -158,7 +158,7 @@ namespace NavUtilLib
                     return new Rect(225, 110, 25, 50);
 
 
-                    //row 4
+                //row 4
                 case '4':
                     return new Rect(0, 60, 25, 50);
 
@@ -186,6 +186,9 @@ namespace NavUtilLib
 
                 case '°':
                     return new Rect(200, 60, 25, 50);
+
+                case '→':
+                    return new Rect(0, 10, 25, 50);
 
                 default:
                     return new Rect(225, 60, 25, 50);

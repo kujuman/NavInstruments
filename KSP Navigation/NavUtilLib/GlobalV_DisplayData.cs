@@ -7,8 +7,7 @@ using var = NavUtilLib.GlobalVariables;
 
 namespace NavUtilLib
 {
-    namespace GlobalVariables
-    {
+
         public static class DisplayData
         {
             public static byte bcnCode = 0;
@@ -48,10 +47,10 @@ namespace NavUtilLib
 
                 locFlag = gsFlag = bcFlag = false;
 
-                if (FlightData.locDeviation > 10 && FlightData.locDeviation < 170 || FlightData.locDeviation < -10 && FlightData.locDeviation > -170)
+                if (var.FlightData.locDeviation > 10 && var.FlightData.locDeviation < 170 || var.FlightData.locDeviation < -10 && var.FlightData.locDeviation > -170)
                     locFlag = true;
 
-                if (FlightData.locDeviation < -90 || FlightData.locDeviation > 90)
+                if (var.FlightData.locDeviation < -90 || var.FlightData.locDeviation > 90)
                 {
                     bcFlag = true;
                 }
@@ -64,23 +63,23 @@ namespace NavUtilLib
 
                 screen = NavUtilLib.Graphics.drawMovedImage(var.Materials.Instance.back, screen, new Vector2(0, 0), false, true);
                 screen = NavUtilLib.Graphics.drawCenterRotatedImage(360 - FlightGlobals.ship_heading, new Vector2(.5f, .5f), var.Materials.Instance.headingCard, screen, 0, 0);
-                screen = NavUtilLib.Graphics.drawCenterRotatedImage(360 - FlightGlobals.ship_heading + (float)FlightData.bearing, new Vector2(.5f, .5f), var.Materials.Instance.NDBneedle, screen, 0, 0);
-                screen = NavUtilLib.Graphics.drawCenterRotatedImage(360 - FlightGlobals.ship_heading + (float)FlightData.selectedRwy.hdg, new Vector2(.5f, .5f), var.Materials.Instance.course, screen, 0, 0);
+                screen = NavUtilLib.Graphics.drawCenterRotatedImage(360 - FlightGlobals.ship_heading + (float)var.FlightData.bearing, new Vector2(.5f, .5f), var.Materials.Instance.NDBneedle, screen, 0, 0);
+                screen = NavUtilLib.Graphics.drawCenterRotatedImage(360 - FlightGlobals.ship_heading + (float)var.FlightData.selectedRwy.hdg, new Vector2(.5f, .5f), var.Materials.Instance.course, screen, 0, 0);
 
                 if (!locFlag)
                 {
                     float deviationCorrection;
                     if (bcFlag)
                     {
-                        deviationCorrection = ((360 + FlightData.locDeviation) % 360 - 180) * 0.078125f;
+                        deviationCorrection = ((360 + var.FlightData.locDeviation) % 360 - 180) * 0.078125f;
                         screen = NavUtilLib.Graphics.drawMovedImagePortion(var.Materials.Instance.flag, 0, .3125f, 0, 1, screen, new Vector2(.821875f, .1703125f), false);
                     }
                     else //not backcourse
                     {
-                        deviationCorrection = FlightData.locDeviation * -.078125f;
+                        deviationCorrection = var.FlightData.locDeviation * -.078125f;
                     }
                     deviationCorrection = Mathf.Clamp(deviationCorrection, -0.234375f, 0.234375f);
-                    screen = NavUtilLib.Graphics.drawCenterRotatedImage(360 - FlightGlobals.ship_heading + (float)FlightData.selectedRwy.hdg, new Vector2(.5f, .5f), var.Materials.Instance.localizer, screen, deviationCorrection, 0);
+                    screen = NavUtilLib.Graphics.drawCenterRotatedImage(360 - FlightGlobals.ship_heading + (float)var.FlightData.selectedRwy.hdg, new Vector2(.5f, .5f), var.Materials.Instance.localizer, screen, deviationCorrection, 0);
                 }
                 else //draw flag
                 {
@@ -91,16 +90,16 @@ namespace NavUtilLib
                 screen = NavUtilLib.Graphics.drawMovedImage(var.Materials.Instance.overlay, screen, new Vector2(0, 0), false, false);
                 //marker beacons
                 //imageBox takes bottom x, 
-                if (FlightData.dme < 30000)
+                if (var.FlightData.dme < 30000)
                 {
                     //checkmkrbcn
                     lastBcnCode = bcnCode;
 
-                    var fB = NavUtilLib.Utils.CalcBearingTo(Utils.CalcRadiansFromDeg(FlightData.selectedRwy.gsLongitude - FlightData.currentVessel.longitude),
-                                                                Utils.CalcRadiansFromDeg(FlightData.currentVessel.latitude),
-                                                                Utils.CalcRadiansFromDeg(FlightData.selectedRwy.gsLatitude));
+                    var fB = NavUtilLib.Utils.CalcBearingTo(Utils.CalcRadiansFromDeg(var.FlightData.selectedRwy.gsLongitude - var.FlightData.currentVessel.longitude),
+                                                                Utils.CalcRadiansFromDeg(var.FlightData.currentVessel.latitude),
+                                                                Utils.CalcRadiansFromDeg(var.FlightData.selectedRwy.gsLatitude));
 
-                    bcnCode = inBeaconArea(Utils.CalcLocalizerDeviation(fB, FlightData.selectedRwy), FlightData.currentVessel,FlightData.selectedRwy);
+                    bcnCode = inBeaconArea(Utils.CalcLocalizerDeviation(fB, var.FlightData.selectedRwy), var.FlightData.currentVessel,var.FlightData.selectedRwy);
 
                     bool drawUnlit = false;
 
@@ -185,7 +184,7 @@ namespace NavUtilLib
                 }
 
                 //find vertical location of pointer
-                float yO = -0.3125f * FlightData.gsDeviation;
+                float yO = -0.3125f * var.FlightData.gsDeviation;
                 //0.3125 per degree
                 yO = Mathf.Clamp(yO, -0.21875f, 0.21875f); //.7 degrees either direction
                 yO += 0.3609375f;
@@ -198,5 +197,5 @@ namespace NavUtilLib
 
 
 
-    }
+    
 }

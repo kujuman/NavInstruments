@@ -9,7 +9,7 @@ namespace KSFRPMHSI
 {
     public class KSF_MLS : InternalModule
     {
-        bool doneLoading = false;
+        //bool doneLoading = false;
 
         [KSPField(isPersistant = false)]
         int btnPrevGS = 1;
@@ -30,7 +30,7 @@ namespace KSFRPMHSI
         {
             NavUtilLib.GlobalVariables.FlightData.updateNavigationData();
 
-            var.DisplayData.DrawHSI(screen, aspectRatio);
+            NavUtilLib.DisplayData.DrawHSI(screen, aspectRatio);
 
 
             NavUtilLib.TextWriter.addTextToRT(screen, "Runway: " + NavUtilLib.GlobalVariables.FlightData.selectedRwy.ident, new Vector2(20, screen.height - 40), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
@@ -127,7 +127,7 @@ namespace KSFRPMHSI
 
             Debug.Log("MLS: Systems started successfully!");
 
-            doneLoading = true;
+            //doneLoading = true;
         }
     }
 }

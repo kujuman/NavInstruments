@@ -107,8 +107,8 @@ namespace NavUtilLib
 
         public static Vector2d CalcCoordinatesFromInitialPointBearingDistance(Vector2d initPoint, double bearingDeg, double distMeters, double bodyRadius)
         {
-            var φ1 = initPoint.x;
-            var λ1 = initPoint.y;
+            var φ1 = CalcRadiansFromDeg(initPoint.x);
+            var λ1 = CalcRadiansFromDeg(initPoint.y);
 
             bearingDeg = makeAngle0to360(bearingDeg);
 
@@ -119,7 +119,7 @@ namespace NavUtilLib
             var λ2 = λ1 + Math.Atan2(Math.Sin(bearingDeg) * Math.Sin(distMeters / bodyRadius) * Math.Cos(φ1),
                                      Math.Cos(distMeters / bodyRadius) - Math.Sin(φ1) * Math.Sin(φ2));
 
-            return new Vector2d(φ2, λ2);
+            return new Vector2d(CalcDegFromRadians(φ2), CalcDegFromRadians(λ2));
         }
         #endregion
 

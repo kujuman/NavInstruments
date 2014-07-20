@@ -16,8 +16,9 @@ namespace NavUtilGUI
 
         private NavUtilLib.Runway tempRwy = new NavUtilLib.Runway();
         private bool isNewRwy = true;
-        private bool useAutoHdg;
-        private bool useAutoElevation;
+        private bool useAutoHdg = false;
+        private bool useAutoElevation = false;
+        private bool makeMarkers = false;
 
         public void startGUI()
         {
@@ -95,6 +96,12 @@ namespace NavUtilGUI
 
 
 
+            GUI.Label(new Rect(170, 185, 240, 20), "Marker distance from current point (m)");
+
+            GUI.Label(new Rect(190, 200, 60, 20), " Inner");
+            GUI.Label(new Rect(260, 200, 60, 20), " Middle");
+            GUI.Label(new Rect(330, 200, 60, 20), " Outer");
+
 
             //isNewRwy
 
@@ -136,6 +143,31 @@ namespace NavUtilGUI
                 {
                     tempRwy.altMSL = Convert.ToSingle(GUI.TextField(new Rect(170, 140, 150, 20), Convert.ToString(tempRwy.altMSL)));
                 }
+
+
+
+                GUI.Label(new Rect(170, 165, 120, 20), "Use Marker Becons?");
+                                makeMarkers = GUI.Toggle(new Rect(350, 168, 20, 20), makeMarkers, "");
+
+
+                if(makeMarkers)
+                {
+                    tempRwy.innerMarkerDist = Convert.ToSingle(GUI.TextField(new Rect(190, 220, 60, 20), Convert.ToString(tempRwy.innerMarkerDist)));
+
+                    tempRwy.middleMarkerDist=  Convert.ToSingle( GUI.TextField(new Rect(260, 220, 60, 20), Convert.ToString(tempRwy.middleMarkerDist)));
+                    tempRwy.outerMarkerDist =  Convert.ToSingle( GUI.TextField(new Rect(330, 220, 60, 20), Convert.ToString(tempRwy.outerMarkerDist)));
+
+                    if (tempRwy.innerMarkerDist < -500)
+                        tempRwy.innerMarkerDist = -500;
+
+
+                    if (tempRwy.middleMarkerDist < -500)
+                        tempRwy.middleMarkerDist = -500;
+
+
+                    if (tempRwy.outerMarkerDist < -500)
+                        tempRwy.outerMarkerDist = -500;
+                }
             }
             else
             {
@@ -144,11 +176,25 @@ namespace NavUtilGUI
                 GUI.Label(new Rect(170, 90, 150, 20), tempRwy.hdg.ToString() + "°");
                 GUI.Label(new Rect(170, 140, 150, 20), Convert.ToString(tempRwy.altMSL) + "m");
 
+                if(tempRwy.innerMarkerDist > -500)
+                GUI.Label(new Rect(190, 220, 60, 20), tempRwy.innerMarkerDist.ToString() + "m");
+                else
+                    GUI.Label(new Rect(190, 220, 60, 20), "  N/A");
+
+                if(tempRwy.middleMarkerDist > -500)
+                GUI.Label(new Rect(260, 220, 60, 20), tempRwy.middleMarkerDist.ToString() +"m");
+                else
+                    GUI.Label(new Rect(260, 220, 60, 20), "  N/A");
+
+                if(tempRwy.outerMarkerDist > -500)
+                GUI.Label(new Rect(330, 220, 60, 20), tempRwy.outerMarkerDist.ToString() + "m");
+                else
+                    GUI.Label(new Rect(330, 220, 60, 20), "  N/A");
             }
 
             if (isNewRwy)
             {
-                if (GUI.Button(new Rect(170, 200, 200, 20), "Create Runway"))
+                if (GUI.Button(new Rect(170, 250, 200, 20), "Create Runway"))
                 {
                     //create the runway and add to database
                     tempRwy.body = FlightGlobals.currentMainBody.bodyName;
@@ -160,13 +206,18 @@ namespace NavUtilGUI
                     tempRwy.locLatitude = (float)loc.x;
                     tempRwy.locLongitude = (float)loc.y;
 
+                    if (!makeMarkers)
+                    {
+                        tempRwy.innerMarkerDist = -1000;
+                        tempRwy.middleMarkerDist = -1000;
+                        tempRwy.outerMarkerDist = -1000;
+                    }
+
 
                     Rwy.customRunways.Add(tempRwy);
                     Rwy.rwyList.Add(tempRwy);
 
                     Rwy.cRwyIdx = Rwy.customRunways.FindIndex(r => r.ident == tempRwy.ident);
-
-                    //
 
                     WriteCustomRwys();
 
@@ -176,7 +227,7 @@ namespace NavUtilGUI
             else
             {
                 //show delete button
-                if(GUI.Button(new Rect(170, 200, 200, 20),"Delete This Runway"))
+                if(GUI.Button(new Rect(170, 250, 200, 20),"Delete This Runway"))
                 {
                     Rwy.rwyList.Remove(Rwy.customRunways[Rwy.cRwyIdx]);
                     Rwy.customRunways.Remove(Rwy.customRunways[Rwy.cRwyIdx]);
@@ -189,8 +240,6 @@ namespace NavUtilGUI
                     tempRwy = new NavUtilLib.Runway();
                 }
             }
-
-
             GUI.DragWindow();
         }
 

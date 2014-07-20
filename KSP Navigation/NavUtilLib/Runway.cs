@@ -29,12 +29,12 @@ namespace NavUtilLib
         public float locLongitude;
 
         //[KSPField]
-        public float outerMarkerDist = -1000;
+        public float outerMarkerDist = 10000;
 
         //[KSPField]
-        public float middleMarkerDist = -1000;
+        public float middleMarkerDist = 2200;
 
         //[KSPField]
-        public float innerMarkerDist = -1000;
+        public float innerMarkerDist = 200;
     }
 }
