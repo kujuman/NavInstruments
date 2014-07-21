@@ -26,6 +26,8 @@ namespace NavUtilLib
 
             public static bool navAidsIsLoaded = false;
 
+            public static bool enableFineLoc = true;
+
             public static void loadNavAids()
             {
                 Debug.Log("NavUtilLib: Loading NavAid database...");

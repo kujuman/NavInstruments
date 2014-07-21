@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("KSF_NavInstruments")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("NavUtilGUI")]
+[assembly: AssemblyDescription("An addon for Kerbal Space Program to create a GUI between NavUtilLib and Toolbar")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("KSF_NavInstruments")]
+[assembly: AssemblyProduct("NavUtilGUI")]
 [assembly: AssemblyCopyright("Copyright ©  2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -32,5 +32,6 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.1.0.0")]
-[assembly: AssemblyFileVersion("0.1.0.0")]
+[assembly: AssemblyVersion("0.4.1")]
+//[assembly: AssemblyFileVersion("0.4.*")]
+

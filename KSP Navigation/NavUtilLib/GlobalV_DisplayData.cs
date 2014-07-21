@@ -45,7 +45,10 @@ namespace NavUtilLib
             {
                 var.FlightData.updateNavigationData();
 
-                locFlag = gsFlag = bcFlag = false;
+                locFlag = bcFlag = false;
+                gsFlag = true; 
+
+
 
                 if (var.FlightData.locDeviation > 10 && var.FlightData.locDeviation < 170 || var.FlightData.locDeviation < -10 && var.FlightData.locDeviation > -170)
                     locFlag = true;
@@ -66,8 +69,16 @@ namespace NavUtilLib
                 screen = NavUtilLib.Graphics.drawCenterRotatedImage(360 - FlightGlobals.ship_heading + (float)var.FlightData.bearing, new Vector2(.5f, .5f), var.Materials.Instance.NDBneedle, screen, 0, 0);
                 screen = NavUtilLib.Graphics.drawCenterRotatedImage(360 - FlightGlobals.ship_heading + (float)var.FlightData.selectedRwy.hdg, new Vector2(.5f, .5f), var.Materials.Instance.course, screen, 0, 0);
 
+                bool fineLoc = false;
+
                 if (!locFlag)
                 {
+
+                    if (NavUtilLib.GlobalVariables.Settings.enableFineLoc && NavUtilLib.GlobalVariables.FlightData.dme < 7500)
+                    {
+                            fineLoc = true;
+                    }
+
                     float deviationCorrection;
                     if (bcFlag)
                     {
@@ -78,7 +89,37 @@ namespace NavUtilLib
                     {
                         deviationCorrection = var.FlightData.locDeviation * -.078125f;
                     }
+                    //if fineLoc == false then we use course guidance mode. In this mode each tick on Loc is 1°. in fine guidance mode each tick is 0.25°
+
+                    string locMode = "Loc→Coarse Mode";
+
+                    if (fineLoc && Mathf.Abs(NavUtilLib.GlobalVariables.FlightData.locDeviation) < 0.75f)
+                    {
+                        deviationCorrection *= 4; //we're magnifying the needle deflection, which increases sensetivity
+
+                        //now to inform the user that fine control is enabled
+                        locMode = "Loc→Fine Mode";
+
+                        //change the color of the localizer needle/font?
+                        NavUtilLib.GlobalVariables.Materials.Instance.whiteFont.color = Color.magenta;
+                        screen = NavUtilLib.TextWriter.addTextToRT(screen, locMode, new Vector2(380, screen.height - 570), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, 0.5f);
+                        NavUtilLib.GlobalVariables.Materials.Instance.whiteFont.color = Color.white;
+
+                        NavUtilLib.GlobalVariables.Materials.Instance.localizer.color = Color.yellow;
+
+                        NavUtilLib.GlobalVariables.Materials.Instance.NDBneedle.color = Color.clear;
+                    }
+                    else
+                    {
+                        fineLoc = false;
+
+                        NavUtilLib.GlobalVariables.Materials.Instance.localizer.color = Color.magenta;
+                        screen = NavUtilLib.TextWriter.addTextToRT(screen, locMode, new Vector2(380, screen.height - 570), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, 0.5f);
+                    }
+
                     deviationCorrection = Mathf.Clamp(deviationCorrection, -0.234375f, 0.234375f);
+
+
                     screen = NavUtilLib.Graphics.drawCenterRotatedImage(360 - FlightGlobals.ship_heading + (float)var.FlightData.selectedRwy.hdg, new Vector2(.5f, .5f), var.Materials.Instance.localizer, screen, deviationCorrection, 0);
                 }
                 else //draw flag
@@ -86,20 +127,29 @@ namespace NavUtilLib
                     screen = NavUtilLib.Graphics.drawMovedImagePortion(var.Materials.Instance.flag, .34375f, .65625f, 0, 1, screen, new Vector2(.821875f, 0.2046875f), false);
                 }
 
+                if(locFlag || !fineLoc)
+                    NavUtilLib.GlobalVariables.Materials.Instance.NDBneedle.color = Color.white;
+
 
                 screen = NavUtilLib.Graphics.drawMovedImage(var.Materials.Instance.overlay, screen, new Vector2(0, 0), false, false);
                 //marker beacons
                 //imageBox takes bottom x, 
-                if (var.FlightData.dme < 30000)
+                if (var.FlightData.dme < 200000)
                 {
+                    var fB = NavUtilLib.Utils.CalcBearingTo(Utils.CalcRadiansFromDeg(var.FlightData.selectedRwy.gsLongitude - var.FlightData.currentVessel.longitude),
+                                            Utils.CalcRadiansFromDeg(var.FlightData.currentVessel.latitude),
+                                            Utils.CalcRadiansFromDeg(var.FlightData.selectedRwy.gsLatitude));
+
+                    var gsHorDev = Utils.CalcLocalizerDeviation(fB,var.FlightData.selectedRwy);
+
+                    if (Math.Abs(gsHorDev) < 25)
+                        gsFlag = false;
+
+
                     //checkmkrbcn
                     lastBcnCode = bcnCode;
 
-                    var fB = NavUtilLib.Utils.CalcBearingTo(Utils.CalcRadiansFromDeg(var.FlightData.selectedRwy.gsLongitude - var.FlightData.currentVessel.longitude),
-                                                                Utils.CalcRadiansFromDeg(var.FlightData.currentVessel.latitude),
-                                                                Utils.CalcRadiansFromDeg(var.FlightData.selectedRwy.gsLatitude));
-
-                    bcnCode = inBeaconArea(Utils.CalcLocalizerDeviation(fB, var.FlightData.selectedRwy), var.FlightData.currentVessel,var.FlightData.selectedRwy);
+                    bcnCode = inBeaconArea(gsHorDev, var.FlightData.currentVessel,var.FlightData.selectedRwy);
 
                     bool drawUnlit = false;
 
@@ -189,7 +239,11 @@ namespace NavUtilLib
                 yO = Mathf.Clamp(yO, -0.21875f, 0.21875f); //.7 degrees either direction
                 yO += 0.3609375f;
 
-                screen = NavUtilLib.Graphics.drawMovedImage(var.Materials.Instance.pointer, screen, new Vector2(0.5f, yO), true, false);
+
+                if (gsFlag)
+                    screen = NavUtilLib.Graphics.drawMovedImagePortion(var.Materials.Instance.flag, .65625f, 1, 0, 1, screen, new Vector2(.821875f, 0.2390625f), false);
+                else
+                    screen = NavUtilLib.Graphics.drawMovedImage(var.Materials.Instance.pointer, screen, new Vector2(0.5f, yO), true, false);
 
                 GL.PopMatrix();
             }
