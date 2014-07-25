@@ -1,4 +1,6 @@
-﻿using System;
+﻿//NavUtilities by kujuman, © 2014. All Rights Reserved.
+
+using System;
 
 namespace NavUtilLib
 {

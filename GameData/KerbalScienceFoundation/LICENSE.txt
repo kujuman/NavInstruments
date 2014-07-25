@@ -1,3 +1,3 @@
-NavInstruments for Kerbal Space Program by kujuman, 2014
+NavUtilities software (code and compiled binarys) for Kerbal Space Program by kujuman, © 2014. All rights reserved.
 
-This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.
+The artwork in this package is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.

@@ -100,7 +100,6 @@ class btnCreate : MonoBehaviour
         
     }
 
-
     public void Activate(bool state)
     {
         if (state)
