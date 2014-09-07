@@ -96,8 +96,10 @@ namespace NavUtilLib
             public static double bearing;
             public static double dme;
             public static double elevationAngle;
-            public static float locDeviation;
-            public static float gsDeviation;
+            public static double locDeviation;
+            public static double gsDeviation;
+			public static double runwayHeading;
+			//public static double DistanceFromCenterline;
 
             public static void updateNavigationData()
             {
@@ -108,8 +110,11 @@ namespace NavUtilLib
                 bearing = NavUtilLib.Utils.CalcBearingToBeacon(currentVessel, selectedRwy);
                 dme = NavUtilLib.Utils.CalcDistanceToBeacon(currentVessel, selectedRwy);
                 elevationAngle = NavUtilLib.Utils.CalcElevationAngle(currentVessel, selectedRwy);
-                locDeviation = NavUtilLib.Utils.CalcLocalizerDeviation(bearing, selectedRwy);
+				locDeviation = NavUtilLib.Utils.CalcLocalizerDeviation(currentVessel, selectedRwy);
                 gsDeviation = NavUtilLib.Utils.CalcGlideslopeDeviation(elevationAngle, selectedGlideSlope);
+
+				runwayHeading = NavUtilLib.Utils.CalcProjectedRunwayHeading(currentVessel, selectedRwy);
+				//DistanceFromCenterline = NavUtilLib.Utils.CalcCartesianDeviationFromCenterlinePlane (currentVessel, selectedRwy);
 
                 SetLastNavUpdateUT();
             }
