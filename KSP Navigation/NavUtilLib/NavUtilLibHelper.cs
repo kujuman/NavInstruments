@@ -3,17 +3,22 @@
 using System;
 using UnityEngine;
 using KSP;
+using NavUtilLib;
+using var = NavUtilLib.GlobalVariables;
+
 
 namespace NavUtilLib
 {
-    //[KSPAddon(KSPAddon.Startup.Flight, false)]
+    [KSPAddon(KSPAddon.Startup.Flight, false)]
     public class NavUtilLibApp : MonoBehaviour
     {
         //this class is to help load textures via GameDatabase since we cannot use static classes
 
-        //NavUtilLibApp app;
+        NavUtilLibApp app;
 
-        //ApplicationLauncherButton appButton;
+        ApplicationLauncherButton appButton;
+
+        public bool isHovering = false;
 
         //RUIPanelTabGroup pTG;
 
@@ -35,144 +40,378 @@ namespace NavUtilLib
         //private System.Collections.Generic.List<bool> bList;
 
 
-        //void Awake()
-        //{
-        //    GameEvents.onGUIApplicationLauncherReady.Add(OnGUIReady);
-
-        //    GameEvents.onGameSceneLoadRequested.Add(dEstroy);
-
-
-        //}
 
 
 
+        private Rect windowPosition;
+        private RenderTexture rt;
 
-        //public void dEstroy(GameScenes g)
-        //{
-        //    GameEvents.onGUIApplicationLauncherReady.Remove(OnGUIReady);
+        private bool rwyHover = false;
+        private bool gsHover = false;
+        private bool closeHover = false;
 
-        //    if (appButton != null)
-        //    {
-        //        ApplicationLauncher.Instance.RemoveModApplication(appButton);
-        //    }
-        //}
+        private void displayHSI()
+        {
+            if (!NavUtilLib.GlobalVariables.Settings.hsiState)
+            {
 
+                Activate(true);
 
+                NavUtilLib.GlobalVariables.Settings.hsiState = true;
+            }
+            else
+            {
+                Activate(false);
 
-        //void OnGUIReady()
-        //{
-        //    if (ApplicationLauncher.Ready)
-        //    {
-        //        appButton = ApplicationLauncher.Instance.AddModApplication(
-        //            onAppLaunchToggleOn,
-        //            onAppLaunchToggleOff,
-        //            onAppLaunchHoverOn,
-        //            onAppLaunchHoverOff,
-        //            onAppLaunchEnable,
-        //            onAppLaunchDisable,
-        //            ApplicationLauncher.AppScenes.FLIGHT,
-        //            (Texture)GameDatabase.Instance.GetTexture("KerbalScienceFoundation/NavInstruments/CommonTextures/toolbarButton3838", false)
-        //          );
-        //        ;
-        //    }
+                NavUtilLib.GlobalVariables.Settings.hsiState = false;
+            }
+        }
 
-        //    app = this;
+        public void Activate(bool state)
+        {
+            if (state)
+            {
+                RenderingManager.AddToPostDrawQueue(3, OnDraw);
 
-        //    panel = new UIInteractivePanel();
-        //    panel.draggable = true;
-        //    panel.index = 1;
-            
+                rt = new RenderTexture(640, 640, 24, RenderTextureFormat.ARGB32);
 
+                Debug.Log("ILS: Starting systems...");
+                if (!var.Settings.navAidsIsLoaded)
+                    var.Settings.loadNavAids();
 
-        //}
+                if (!var.Materials.isLoaded)
+                    var.Materials.loadMaterials();
 
-        //void onAppLaunchToggleOn()
-        //{
-        //    ////Debug.Log("onAppLaunchToggleOn");
+                //if (!var.Audio.isLoaded)
+                var.Audio.initializeAudio();
 
-        //    //Debug.Log(appButton.GetAnchor().ToString());
-        //    ////Debug.Log("State: " + appButton.State);
-        //    ////Debug.Log(appButton.transform.ToString());
-        //    //Debug.Log(appButton.transform.position.ToString());
-        //    //Debug.Log();
+                //ConfigureCamera();
+
+                windowPosition.x = NavUtilLib.GlobalVariables.Settings.hsiPosition.x;
+                windowPosition.y = NavUtilLib.GlobalVariables.Settings.hsiPosition.y;
 
 
-        //    ;
-        //}
+                Debug.Log("ILS: Systems started successfully!");
+            }
+            else
+            {
+                state = false;
+                RenderingManager.RemoveFromPostDrawQueue(3, OnDraw); //close the GUI
+                NavUtilLib.GlobalVariables.Settings.hsiPosition.x = windowPosition.x;
+                NavUtilLib.GlobalVariables.Settings.hsiPosition.y = windowPosition.y;
+            }
+        }
+
+        private void OnDraw()
+        {
+            //Debug.Log("HSI: OnDraw()");
+            if (CameraManager.Instance.currentCameraMode == CameraManager.CameraMode.Flight)
+            {
+                if ((windowPosition.xMin + windowPosition.width) < 20) windowPosition.xMin = 20 - windowPosition.width;
+                if (windowPosition.yMin + windowPosition.height < 20) windowPosition.yMin = 20 - windowPosition.height;
+                if (windowPosition.xMin > Screen.width - 20) windowPosition.xMin = Screen.width - 20;
+                if (windowPosition.yMin > Screen.height - 20) windowPosition.yMin = Screen.height - 20;
+
+                windowPosition = new Rect(windowPosition.x,
+             windowPosition.y,
+             (int)(NavUtilLib.GlobalVariables.Settings.hsiPosition.width * NavUtilLib.GlobalVariables.Settings.hsiGUIscale),
+             (int)(NavUtilLib.GlobalVariables.Settings.hsiPosition.height * NavUtilLib.GlobalVariables.Settings.hsiGUIscale));
+
+                windowPosition = GUI.Window(1, windowPosition, OnWindow, "Horizontal Situation Indicator");
+
+            }
+            //Debug.Log(windowPosition.ToString());
+        }
+
+        private void DrawGauge(RenderTexture screen)
+        {
+            NavUtilLib.GlobalVariables.FlightData.updateNavigationData();
+
+            RenderTexture pt = RenderTexture.active;
+            RenderTexture.active = screen;
+
+            if (!screen.IsCreated()) screen.Create();
+
+            NavUtilLib.DisplayData.DrawHSI(screen, 1);
+
+            //write text to screen
+            //write runway info
 
 
-        //void onAppLaunchToggleOff()
-        //{
-        //    //bug.Log("onAppLaunchToggleOff");
-        //    ;
-        //}
-        //void onAppLaunchHoverOn()
-        //{
-        //    //bList.Clear();
+            if (rwyHover)
+                NavUtilLib.TextWriter.addTextToRT(screen, "→Runway: " + NavUtilLib.GlobalVariables.FlightData.selectedRwy.ident, new Vector2(20, screen.height - 40), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
+            else
+                NavUtilLib.TextWriter.addTextToRT(screen, " Runway: " + NavUtilLib.GlobalVariables.FlightData.selectedRwy.ident, new Vector2(20, screen.height - 40), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
 
-        //    //foreach(ApplicationLauncherButton b in ApplicationLauncher.FindObjectsOfType<ApplicationLauncherButton>())
-        //    //{
-        //    //    if (b.State == RUIToggleButton.ButtonState.TRUE)
-        //    //        bList.Add(true);
-        //    //    else
-        //    //        bList.Add(false);
-
-        //    //    if (b != appButton)
-        //    //    {
-        //    //        b.SetFalse();
-        //    //    }
-        //    //}
-
-        //    //appButton.SetTrue();
-
-        //    //foreach(Staging s in GameObject.FindObjectsOfType<Staging>()) 
-        //    //{
-        //    //    Debug.Log("staging " + s.stageSpacing);
-
-        //    //    s.stageSpacing++;
-        //    //}
+            if (gsHover)
+                NavUtilLib.TextWriter.addTextToRT(screen, "→Glideslope: " + string.Format("{0:F1}", NavUtilLib.GlobalVariables.FlightData.selectedGlideSlope) + "°  Elevation: " + string.Format("{0:F0}", NavUtilLib.GlobalVariables.FlightData.selectedRwy.altMSL) + "m", new Vector2(20, screen.height - 64), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
+            else
+                NavUtilLib.TextWriter.addTextToRT(screen, " Glideslope: " + string.Format("{0:F1}", NavUtilLib.GlobalVariables.FlightData.selectedGlideSlope) + "°  Elevation: " + string.Format("{0:F0}", NavUtilLib.GlobalVariables.FlightData.selectedRwy.altMSL) + "m", new Vector2(20, screen.height - 64), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
 
 
 
+            NavUtilLib.TextWriter.addTextToRT(screen, NavUtilLib.Utils.numberFormatter((float)NavUtilLib.Utils.makeAngle0to360(FlightGlobals.ship_heading), true).ToString(), new Vector2(584, screen.height - 102), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
+            NavUtilLib.TextWriter.addTextToRT(screen, NavUtilLib.Utils.numberFormatter((float)NavUtilLib.Utils.makeAngle0to360(NavUtilLib.GlobalVariables.FlightData.bearing), true).ToString(), new Vector2(584, screen.height - 131), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
+            NavUtilLib.TextWriter.addTextToRT(screen, NavUtilLib.Utils.numberFormatter((float)NavUtilLib.Utils.makeAngle0to360(NavUtilLib.GlobalVariables.FlightData.selectedRwy.hdg), true).ToString(), new Vector2(35, screen.height - 124), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
+            NavUtilLib.TextWriter.addTextToRT(screen, NavUtilLib.Utils.numberFormatter((float)NavUtilLib.GlobalVariables.FlightData.dme / 1000, false).ToString(), new Vector2(45, screen.height - 563), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
 
-        //    var a = ApplicationLauncher.Instance.anchor.transform.position;
-        //    Debug.Log(a);
+            if (closeHover)
+                NavUtilLib.TextWriter.addTextToRT(screen, "    Close HSI", new Vector2(340, 15), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
 
-        //    Debug.Log("anchor " + appButton.GetAnchor().ToString());
-        //}
-        //void onAppLaunchHoverOff()
-        //{
-        //    //int cB = 0;
-        //    //foreach (ApplicationLauncherButton b in ApplicationLauncher.FindObjectsOfType<ApplicationLauncherButton>())
-        //    //{
-        //    //    if (bList[cB])
-        //    //    {
-        //    //        b.SetTrue();
-        //    //    }
-        //    //    else
-        //    //        b.SetFalse();
+            RenderTexture.active = pt;
+        }
 
-        //    //    if (b == appButton)
-        //    //    {
-        //    //        b.SetFalse();
-        //    //    }
-        //    //}
-        //    //bList.Clear();
-        //    ;
-        //}
-        //void onAppLaunchEnable()
-        //{
-        //    ;
-        //}
-        //void onAppLaunchDisable()
-        //{
-        //    ;
-        //}
+        private void OnWindow(int WindowID)
+        {
+            //Debug.Log("HSI: OnWindow()");
 
-        //bool isApplicationTrue()
-        //{
-        //    return false;
-        //}
+
+
+            Rect rwyBtn = new Rect(20 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale,
+                13 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale,
+                200 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale,
+                20 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale);
+
+            Rect gsBtn = new Rect(20 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale,
+        38 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale,
+        200 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale,
+        20 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale);
+
+            Rect closeBtn = new Rect(330 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale,
+                580 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale,
+                300 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale,
+                50 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale);
+
+            if (GUI.Button(closeBtn, new GUIContent("CloseBtn", "closeOn")))
+            {
+                //displayHSI();
+                //Debug.Log("CloseHSI");
+                appButton.SetFalse();
+                //goto CloseWindow;
+            }
+
+            if (GUI.tooltip == "closeOn")
+                closeHover = true;
+            else
+                closeHover = false;
+
+
+            if (GUI.Button(rwyBtn, new GUIContent("Next Runway", "rwyOn")))
+            {
+                if (Event.current.button == 0)
+                {
+                    NavUtilLib.GlobalVariables.FlightData.rwyIdx++;
+                }
+                else
+                {
+                    NavUtilLib.GlobalVariables.FlightData.rwyIdx--;
+                }
+
+                NavUtilLib.GlobalVariables.FlightData.rwyIdx = NavUtilLib.Utils.indexChecker(NavUtilLib.GlobalVariables.FlightData.rwyIdx, NavUtilLib.GlobalVariables.FlightData.rwyList.Count - 1, 0);
+            }
+
+            if (GUI.tooltip == "rwyOn")
+                rwyHover = true;
+            else
+                rwyHover = false;
+
+
+            if (GUI.Button(gsBtn, new GUIContent("Next G/S", "gsOn")))
+            {
+                if (Event.current.button == 0)
+                {
+                    NavUtilLib.GlobalVariables.FlightData.gsIdx++;
+                }
+                else
+                {
+                    NavUtilLib.GlobalVariables.FlightData.gsIdx--;
+                }
+
+                NavUtilLib.GlobalVariables.FlightData.gsIdx = NavUtilLib.Utils.indexChecker(NavUtilLib.GlobalVariables.FlightData.gsIdx, NavUtilLib.GlobalVariables.FlightData.gsList.Count - 1, 0);
+            }
+
+            if (GUI.tooltip == "gsOn")
+                gsHover = true;
+            else
+                gsHover = false;
+
+            DrawGauge(rt);
+            GUI.DrawTexture(new Rect(0, 0, windowPosition.width, windowPosition.height), rt, ScaleMode.ScaleToFit);
+
+            GUI.DragWindow();
+        }
+
+
+
+
+
+
+
+        void Awake()
+        {
+            GameEvents.onGUIApplicationLauncherReady.Add(OnGUIReady);
+
+            GameEvents.onGameSceneLoadRequested.Add(dEstroy);
+
+
+        }
+
+
+
+
+        public void dEstroy(GameScenes g)
+        {
+            GameEvents.onGUIApplicationLauncherReady.Remove(OnGUIReady);
+
+            if (appButton != null)
+            {
+                ApplicationLauncher.Instance.RemoveModApplication(appButton);
+            }
+        }
+
+
+
+        void OnGUIReady()
+        {
+            if (ApplicationLauncher.Ready)
+            {
+                appButton = ApplicationLauncher.Instance.AddModApplication(
+                    onAppLaunchToggleOn,
+                    onAppLaunchToggleOff,
+                    onAppLaunchHoverOn,
+                    onAppLaunchHoverOff,
+                    onAppLaunchEnable,
+                    onAppLaunchDisable,
+                    ApplicationLauncher.AppScenes.FLIGHT,
+                    (Texture)GameDatabase.Instance.GetTexture("KerbalScienceFoundation/NavInstruments/CommonTextures/toolbarButton3838", false)
+                  );
+                ;
+            }
+
+            app = this;
+
+            //panel = new UIInteractivePanel();
+            //panel.draggable = true;
+            //panel.index = 1;
+
+
+
+        }
+
+        void onAppLaunchToggleOn()
+        {
+            if(isHovering)
+            {
+                if (Event.current.button == 1)
+                {
+                    NavUtilLib.SettingsGUI.startSettingsGUI();
+                    goto Finish;
+                }
+            }
+            displayHSI();
+
+        Finish:
+            ;
+            ////Debug.Log("onAppLaunchToggleOn");
+
+            //Debug.Log(appButton.GetAnchor().ToString());
+            ////Debug.Log("State: " + appButton.State);
+            ////Debug.Log(appButton.transform.ToString());
+            //Debug.Log(appButton.transform.position.ToString());
+            //Debug.Log();
+
+
+        }
+
+
+
+
+        void onAppLaunchToggleOff()
+        {
+            if (isHovering)
+            {
+                if (Event.current.button == 1)
+                {
+                    NavUtilLib.SettingsGUI.startSettingsGUI();
+                    goto Finish;
+                }
+            }
+            displayHSI();
+
+        Finish:
+            ;
+            //bug.Log("onAppLaunchToggleOff");
+            ;
+        }
+        void onAppLaunchHoverOn()
+        {
+            //bList.Clear();
+
+            //foreach(ApplicationLauncherButton b in ApplicationLauncher.FindObjectsOfType<ApplicationLauncherButton>())
+            //{
+            //    if (b.State == RUIToggleButton.ButtonState.TRUE)
+            //        bList.Add(true);
+            //    else
+            //        bList.Add(false);
+
+            //    if (b != appButton)
+            //    {
+            //        b.SetFalse();
+            //    }
+            //}
+
+            //appButton.SetTrue();
+
+            //foreach(Staging s in GameObject.FindObjectsOfType<Staging>()) 
+            //{
+            //    Debug.Log("staging " + s.stageSpacing);
+
+            //    s.stageSpacing++;
+            //}
+
+            //Debug.Log("onHover!");
+
+            isHovering = true;
+            //var a = ApplicationLauncher.Instance.anchor.transform.position;
+            //Debug.Log(a);
+
+            //Debug.Log("anchor " + appButton.GetAnchor().ToString());
+        }
+        void onAppLaunchHoverOff()
+        {
+            isHovering = false;
+
+            //int cB = 0;
+            //foreach (ApplicationLauncherButton b in ApplicationLauncher.FindObjectsOfType<ApplicationLauncherButton>())
+            //{
+            //    if (bList[cB])
+            //    {
+            //        b.SetTrue();
+            //    }
+            //    else
+            //        b.SetFalse();
+
+            //    if (b == appButton)
+            //    {
+            //        b.SetFalse();
+            //    }
+            //}
+            //bList.Clear();
+            ;
+        }
+        void onAppLaunchEnable()
+        {
+            ;
+        }
+        void onAppLaunchDisable()
+        {
+            ;
+        }
+
+        bool isApplicationTrue()
+        {
+            return false;
+        }
 
     }
 }

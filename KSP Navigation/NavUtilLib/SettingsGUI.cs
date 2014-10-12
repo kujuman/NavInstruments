@@ -78,6 +78,9 @@ namespace NavUtilLib
 
             }
 
+            if (GUI.Button(new Rect(5, 150, 115, 20), "Custom Rwys"))
+                NavUtilLib.GlobalVariables.Settings.rE.startGUI();
+
             NavUtilLib.GlobalVariables.Settings.hsiGUIscale = GUI.HorizontalSlider(new Rect(5, 105, 240, 30),NavUtilLib.GlobalVariables.Settings.hsiGUIscale, 0.1f, 1.0f);
 
             GUI.DragWindow();

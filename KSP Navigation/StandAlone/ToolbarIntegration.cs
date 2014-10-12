@@ -1,277 +1,278 @@
-﻿using System;
-using UnityEngine;
-using Toolbar;
-using NavUtilLib;
-using var = NavUtilLib.GlobalVariables;
-
-
-[KSPAddon(KSPAddon.Startup.EveryScene, false)]
-class btnCreate : MonoBehaviour
-{
-    private IButton b;
-
-    //public static bool HSIguiState = false;
-
-    private Rect windowPosition;
-    private RenderTexture rt;
-
-    private bool rwyHover = false;
-    private bool gsHover = false;
-    private bool closeHover = false;
-
-    internal btnCreate()
-    {
-        b = ToolbarManager.Instance.add("NavUtil", "NavUtilBtn");
-        b.TexturePath = "KerbalScienceFoundation/NavInstruments/CommonTextures/toolbarButton";
-        b.ToolTip = "View Navigation Utilites";
-        b.Visibility = new GameScenesVisibility(GameScenes.FLIGHT);
-        b.OnClick += (e) => togglePopupMenu(b);
-    }
-
-
-    private void togglePopupMenu(IButton button)
-    {
-        if (button.Drawable == null)
-        {
-            createPopupMenu(button);
-        }
-        else
-        {
-            destroyPopupMenu(button);
-        }
-    }
-
-
-    private void createPopupMenu(IButton button)
-    {
-        PopupMenuDrawable menu = new PopupMenuDrawable();
-
-        IButton option1 = menu.AddOption("Nav Utilities Options");
-        option1.OnClick += (e2) => NavUtilLib.SettingsGUI.startSettingsGUI();
-
-        if (NavUtilLib.GlobalVariables.Settings.hsiState)
-        {
-            IButton option2 = menu.AddOption("Close HSI Window");
-            option2.OnClick += (e2) => displayHSI();
-        }
-        else
-        {
-            IButton option2 = menu.AddOption("Open HSI Window");
-            option2.OnClick += (e2) => displayHSI();
-        }
-
-        IButton option3 = menu.AddOption("Custom Runways");
-        option3.OnClick += (e2) => NavUtilLib.GlobalVariables.Settings.rE.startGUI();
-
-        menu.OnAnyOptionClicked += () => destroyPopupMenu(button);
-
-        button.Drawable = menu;
-    }
-
-    private void displayHSI()
-    {
-        if (!NavUtilLib.GlobalVariables.Settings.hsiState)
-        {
-            
-            Activate(true);
-
-            NavUtilLib.GlobalVariables.Settings.hsiState = true;
-        }
-        else
-        {
-            Activate(false);
-
-            NavUtilLib.GlobalVariables.Settings.hsiState = false;
-        }
-    }
-
-
-    private void destroyPopupMenu(IButton button)
-    {
-        ((PopupMenuDrawable)button.Drawable).Destroy();
-
-        button.Drawable = null;
-    }
-
-
-    internal void OnDestroy()
-    {
-        b.Destroy();
-        
-    }
+﻿//using System;
+//using UnityEngine;
+//using Toolbar;
+//using NavUtilLib;
+//using var = NavUtilLib.GlobalVariables;
+
+
+//[KSPAddon(KSPAddon.Startup.EveryScene, false)]
+//class btnCreate : MonoBehaviour
+//{
+//    private IButton b;
 
-    public void Activate(bool state)
-    {
-        if (state)
-        {
-            RenderingManager.AddToPostDrawQueue(3, OnDraw);
+//    //public static bool HSIguiState = false;
+
+//    private Rect windowPosition;
+//    private RenderTexture rt;
 
-            rt = new RenderTexture(640, 640, 24, RenderTextureFormat.ARGB32);
+//    private bool rwyHover = false;
+//    private bool gsHover = false;
+//    private bool closeHover = false;
 
-            Debug.Log("ILS: Starting systems...");
-            if (!var.Settings.navAidsIsLoaded)
-                var.Settings.loadNavAids();
+//    internal btnCreate()
+//    {
+//        b = ToolbarManager.Instance.add("NavUtil", "NavUtilBtn");
+//        b.TexturePath = "KerbalScienceFoundation/NavInstruments/CommonTextures/toolbarButton";
+//        b.ToolTip = "View Navigation Utilites";
+//        b.Visibility = new GameScenesVisibility(GameScenes.FLIGHT);
+//        b.OnClick += (e) => togglePopupMenu(b);
+//    }
+
+
+//    private void togglePopupMenu(IButton button)
+//    {
+//        if (button.Drawable == null)
+//        {
+//            createPopupMenu(button);
+//        }
+//        else
+//        {
+//            destroyPopupMenu(button);
+//        }
+//    }
+
+
+//    private void createPopupMenu(IButton button)
+//    {
+//        PopupMenuDrawable menu = new PopupMenuDrawable();
+
+//        IButton option1 = menu.AddOption("Nav Utilities Options");
+//        option1.OnClick += (e2) => NavUtilLib.SettingsGUI.startSettingsGUI();
+
+//        if (NavUtilLib.GlobalVariables.Settings.hsiState)
+//        {
+//            IButton option2 = menu.AddOption("Close HSI Window");
+//            option2.OnClick += (e2) => displayHSI();
+//        }
+//        else
+//        {
+//            IButton option2 = menu.AddOption("Open HSI Window");
+//            option2.OnClick += (e2) => displayHSI();
+//        }
+
+//        IButton option3 = menu.AddOption("Custom Runways");
+//        option3.OnClick += (e2) => NavUtilLib.GlobalVariables.Settings.rE.startGUI();
+
+//        menu.OnAnyOptionClicked += () => destroyPopupMenu(button);
+
+//        button.Drawable = menu;
+//    }
+
+//    private void displayHSI()
+//    {
+//        if (!NavUtilLib.GlobalVariables.Settings.hsiState)
+//        {
+
+//            Activate(true);
 
-            if (!var.Materials.isLoaded)
-                var.Materials.loadMaterials();
+//            NavUtilLib.GlobalVariables.Settings.hsiState = true;
+//        }
+//        else
+//        {
+//            Activate(false);
 
-            //if (!var.Audio.isLoaded)
-            var.Audio.initializeAudio();
+//            NavUtilLib.GlobalVariables.Settings.hsiState = false;
+//        }
+//    }
 
-            //ConfigureCamera();
 
-            Debug.Log("ILS: Systems started successfully!");
-        }
-        else
-        {
-            state = false;
-            RenderingManager.RemoveFromPostDrawQueue(3, OnDraw); //close the GUI
-            NavUtilLib.GlobalVariables.Settings.hsiPosition.x = windowPosition.x;
-            NavUtilLib.GlobalVariables.Settings.hsiPosition.y = windowPosition.y;
-        }
-    }
+//    private void destroyPopupMenu(IButton button)
+//    {
+//        ((PopupMenuDrawable)button.Drawable).Destroy();
 
-    private void OnDraw()
-    {
-        //Debug.Log("HSI: OnDraw()");
-        if (CameraManager.Instance.currentCameraMode == CameraManager.CameraMode.Flight)
-        {
-            if ((windowPosition.xMin + windowPosition.width) < 20) windowPosition.xMin = 20 - windowPosition.width;
-            if (windowPosition.yMin + windowPosition.height < 20) windowPosition.yMin = 20 - windowPosition.height;
-            if (windowPosition.xMin > Screen.width - 20) windowPosition.xMin = Screen.width - 20;
-            if (windowPosition.yMin > Screen.height - 20) windowPosition.yMin = Screen.height - 20;
+//        button.Drawable = null;
+//    }
 
-            windowPosition = new Rect(windowPosition.x,
-         windowPosition.y,
-         (int)(NavUtilLib.GlobalVariables.Settings.hsiPosition.width * NavUtilLib.GlobalVariables.Settings.hsiGUIscale),
-         (int)(NavUtilLib.GlobalVariables.Settings.hsiPosition.height * NavUtilLib.GlobalVariables.Settings.hsiGUIscale));
 
-            windowPosition = GUI.Window(1, windowPosition, OnWindow, "Horizontal Situation Indicator");
+//    internal void OnDestroy()
+//    {
+//        b.Destroy();
 
-        }
-        //Debug.Log(windowPosition.ToString());
-    }
-
-    private void DrawGauge(RenderTexture screen)
-    {
-        NavUtilLib.GlobalVariables.FlightData.updateNavigationData();
-
-        RenderTexture pt = RenderTexture.active;
-        RenderTexture.active = screen;
+//        NavUtilLib.GlobalVariables.Settings.hsiState = false; //thanks to Virindi
+//    }
 
-        if (!screen.IsCreated()) screen.Create();
+//    public void Activate(bool state)
+//    {
+//        if (state)
+//        {
+//            RenderingManager.AddToPostDrawQueue(3, OnDraw);
 
-        NavUtilLib.DisplayData.DrawHSI(screen, 1);
+//            rt = new RenderTexture(640, 640, 24, RenderTextureFormat.ARGB32);
 
-        //write text to screen
-        //write runway info
+//            Debug.Log("ILS: Starting systems...");
+//            if (!var.Settings.navAidsIsLoaded)
+//                var.Settings.loadNavAids();
 
+//            if (!var.Materials.isLoaded)
+//                var.Materials.loadMaterials();
 
-        if (rwyHover)
-            NavUtilLib.TextWriter.addTextToRT(screen, "→Runway: " + NavUtilLib.GlobalVariables.FlightData.selectedRwy.ident, new Vector2(20, screen.height - 40), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
-        else
-            NavUtilLib.TextWriter.addTextToRT(screen, " Runway: " + NavUtilLib.GlobalVariables.FlightData.selectedRwy.ident, new Vector2(20, screen.height - 40), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
+//            //if (!var.Audio.isLoaded)
+//            var.Audio.initializeAudio();
 
-        if (gsHover)
-            NavUtilLib.TextWriter.addTextToRT(screen, "→Glideslope: " + string.Format("{0:F1}", NavUtilLib.GlobalVariables.FlightData.selectedGlideSlope) + "°  Elevation: " + string.Format("{0:F0}", NavUtilLib.GlobalVariables.FlightData.selectedRwy.altMSL) + "m", new Vector2(20, screen.height - 64), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
-        else
-            NavUtilLib.TextWriter.addTextToRT(screen, " Glideslope: " + string.Format("{0:F1}", NavUtilLib.GlobalVariables.FlightData.selectedGlideSlope) + "°  Elevation: " + string.Format("{0:F0}", NavUtilLib.GlobalVariables.FlightData.selectedRwy.altMSL) + "m", new Vector2(20, screen.height - 64), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
+//            //ConfigureCamera();
 
+//            Debug.Log("ILS: Systems started successfully!");
+//        }
+//        else
+//        {
+//            state = false;
+//            RenderingManager.RemoveFromPostDrawQueue(3, OnDraw); //close the GUI
+//            NavUtilLib.GlobalVariables.Settings.hsiPosition.x = windowPosition.x;
+//            NavUtilLib.GlobalVariables.Settings.hsiPosition.y = windowPosition.y;
+//        }
+//    }
 
+//    private void OnDraw()
+//    {
+//        //Debug.Log("HSI: OnDraw()");
+//        if (CameraManager.Instance.currentCameraMode == CameraManager.CameraMode.Flight)
+//        {
+//            if ((windowPosition.xMin + windowPosition.width) < 20) windowPosition.xMin = 20 - windowPosition.width;
+//            if (windowPosition.yMin + windowPosition.height < 20) windowPosition.yMin = 20 - windowPosition.height;
+//            if (windowPosition.xMin > Screen.width - 20) windowPosition.xMin = Screen.width - 20;
+//            if (windowPosition.yMin > Screen.height - 20) windowPosition.yMin = Screen.height - 20;
 
-        NavUtilLib.TextWriter.addTextToRT(screen, NavUtilLib.Utils.numberFormatter((float)NavUtilLib.Utils.makeAngle0to360(FlightGlobals.ship_heading), true).ToString(), new Vector2(584, screen.height - 102), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
-        NavUtilLib.TextWriter.addTextToRT(screen, NavUtilLib.Utils.numberFormatter((float)NavUtilLib.Utils.makeAngle0to360(NavUtilLib.GlobalVariables.FlightData.bearing), true).ToString(), new Vector2(584, screen.height - 131), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
-        NavUtilLib.TextWriter.addTextToRT(screen, NavUtilLib.Utils.numberFormatter((float)NavUtilLib.Utils.makeAngle0to360(NavUtilLib.GlobalVariables.FlightData.selectedRwy.hdg), true).ToString(), new Vector2(35, screen.height - 124), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
-        NavUtilLib.TextWriter.addTextToRT(screen, NavUtilLib.Utils.numberFormatter((float)NavUtilLib.GlobalVariables.FlightData.dme / 1000, false).ToString(), new Vector2(45, screen.height - 563), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
+//            windowPosition = new Rect(windowPosition.x,
+//         windowPosition.y,
+//         (int)(NavUtilLib.GlobalVariables.Settings.hsiPosition.width * NavUtilLib.GlobalVariables.Settings.hsiGUIscale),
+//         (int)(NavUtilLib.GlobalVariables.Settings.hsiPosition.height * NavUtilLib.GlobalVariables.Settings.hsiGUIscale));
 
-        if(closeHover)
-            NavUtilLib.TextWriter.addTextToRT(screen,"    Close HSI",new Vector2(340,15),NavUtilLib.GlobalVariables.Materials.Instance.whiteFont,.64f);
+//            windowPosition = GUI.Window(1, windowPosition, OnWindow, "Horizontal Situation Indicator");
 
-        RenderTexture.active = pt;
-    }
+//        }
+//        //Debug.Log(windowPosition.ToString());
+//    }
 
-    private void OnWindow(int WindowID)
-    {
-        //Debug.Log("HSI: OnWindow()");
+//    private void DrawGauge(RenderTexture screen)
+//    {
+//        NavUtilLib.GlobalVariables.FlightData.updateNavigationData();
 
+//        RenderTexture pt = RenderTexture.active;
+//        RenderTexture.active = screen;
 
+//        if (!screen.IsCreated()) screen.Create();
 
-        Rect rwyBtn = new Rect(20 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale,
-            13 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale,
-            200 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale,
-            20 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale);
+//        NavUtilLib.DisplayData.DrawHSI(screen, 1);
 
-        Rect gsBtn = new Rect(20 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale,
-    38 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale,
-    200 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale,
-    20 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale);
+//        //write text to screen
+//        //write runway info
 
-        Rect closeBtn = new Rect(330 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale,
-            580 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale,
-            300 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale,
-            50 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale);
 
-        if (GUI.Button(closeBtn, new GUIContent("Next Runway", "closeOn")))
-        {
-           
-           displayHSI();
-        }
+//        if (rwyHover)
+//            NavUtilLib.TextWriter.addTextToRT(screen, "→Runway: " + NavUtilLib.GlobalVariables.FlightData.selectedRwy.ident, new Vector2(20, screen.height - 40), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
+//        else
+//            NavUtilLib.TextWriter.addTextToRT(screen, " Runway: " + NavUtilLib.GlobalVariables.FlightData.selectedRwy.ident, new Vector2(20, screen.height - 40), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
 
-        if (GUI.tooltip == "closeOn")
-            closeHover = true;
-        else
-            closeHover = false;
+//        if (gsHover)
+//            NavUtilLib.TextWriter.addTextToRT(screen, "→Glideslope: " + string.Format("{0:F1}", NavUtilLib.GlobalVariables.FlightData.selectedGlideSlope) + "°  Elevation: " + string.Format("{0:F0}", NavUtilLib.GlobalVariables.FlightData.selectedRwy.altMSL) + "m", new Vector2(20, screen.height - 64), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
+//        else
+//            NavUtilLib.TextWriter.addTextToRT(screen, " Glideslope: " + string.Format("{0:F1}", NavUtilLib.GlobalVariables.FlightData.selectedGlideSlope) + "°  Elevation: " + string.Format("{0:F0}", NavUtilLib.GlobalVariables.FlightData.selectedRwy.altMSL) + "m", new Vector2(20, screen.height - 64), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
 
 
-        if (GUI.Button(rwyBtn, new GUIContent ("Next Runway", "rwyOn")))
-        {
-            if(Event.current.button == 0)
-            {
-                NavUtilLib.GlobalVariables.FlightData.rwyIdx++;
-            }
-            else
-            {
-                NavUtilLib.GlobalVariables.FlightData.rwyIdx--;
-            }
 
-            NavUtilLib.GlobalVariables.FlightData.rwyIdx = NavUtilLib.Utils.indexChecker(NavUtilLib.GlobalVariables.FlightData.rwyIdx, NavUtilLib.GlobalVariables.FlightData.rwyList.Count-1, 0);
-        }
+//        NavUtilLib.TextWriter.addTextToRT(screen, NavUtilLib.Utils.numberFormatter((float)NavUtilLib.Utils.makeAngle0to360(FlightGlobals.ship_heading), true).ToString(), new Vector2(584, screen.height - 102), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
+//        NavUtilLib.TextWriter.addTextToRT(screen, NavUtilLib.Utils.numberFormatter((float)NavUtilLib.Utils.makeAngle0to360(NavUtilLib.GlobalVariables.FlightData.bearing), true).ToString(), new Vector2(584, screen.height - 131), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
+//        NavUtilLib.TextWriter.addTextToRT(screen, NavUtilLib.Utils.numberFormatter((float)NavUtilLib.Utils.makeAngle0to360(NavUtilLib.GlobalVariables.FlightData.selectedRwy.hdg), true).ToString(), new Vector2(35, screen.height - 124), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
+//        NavUtilLib.TextWriter.addTextToRT(screen, NavUtilLib.Utils.numberFormatter((float)NavUtilLib.GlobalVariables.FlightData.dme / 1000, false).ToString(), new Vector2(45, screen.height - 563), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
 
-        if (GUI.tooltip == "rwyOn")
-            rwyHover = true;
-        else
-            rwyHover = false;
+//        if (closeHover)
+//            NavUtilLib.TextWriter.addTextToRT(screen, "    Close HSI", new Vector2(340, 15), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
 
+//        RenderTexture.active = pt;
+//    }
 
-        if (GUI.Button(gsBtn, new GUIContent ( "Next G/S", "gsOn")))
-        {
-            if(Event.current.button == 0)
-            {
-                NavUtilLib.GlobalVariables.FlightData.gsIdx++;
-            }
-            else
-            {
-                NavUtilLib.GlobalVariables.FlightData.gsIdx--;
-            }
+//    private void OnWindow(int WindowID)
+//    {
+//        //Debug.Log("HSI: OnWindow()");
 
-            NavUtilLib.GlobalVariables.FlightData.gsIdx= NavUtilLib.Utils.indexChecker(NavUtilLib.GlobalVariables.FlightData.gsIdx, NavUtilLib.GlobalVariables.FlightData.gsList.Count-1, 0);
-        }
 
 
-        if (GUI.tooltip == "gsOn")
-            gsHover = true;
-        else
-            gsHover = false;
+//        Rect rwyBtn = new Rect(20 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale,
+//            13 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale,
+//            200 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale,
+//            20 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale);
 
-        DrawGauge(rt);
-        GUI.DrawTexture(new Rect(0, 0, windowPosition.width, windowPosition.height), rt, ScaleMode.ScaleToFit);
+//        Rect gsBtn = new Rect(20 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale,
+//    38 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale,
+//    200 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale,
+//    20 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale);
 
-        
+//        Rect closeBtn = new Rect(330 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale,
+//            580 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale,
+//            300 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale,
+//            50 * NavUtilLib.GlobalVariables.Settings.hsiGUIscale);
 
+//        if (GUI.Button(closeBtn, new GUIContent("Next Runway", "closeOn")))
+//        {
 
+//            displayHSI();
+//        }
 
-        GUI.DragWindow();
-    }
+//        if (GUI.tooltip == "closeOn")
+//            closeHover = true;
+//        else
+//            closeHover = false;
 
 
-}
+//        if (GUI.Button(rwyBtn, new GUIContent("Next Runway", "rwyOn")))
+//        {
+//            if (Event.current.button == 0)
+//            {
+//                NavUtilLib.GlobalVariables.FlightData.rwyIdx++;
+//            }
+//            else
+//            {
+//                NavUtilLib.GlobalVariables.FlightData.rwyIdx--;
+//            }
+
+//            NavUtilLib.GlobalVariables.FlightData.rwyIdx = NavUtilLib.Utils.indexChecker(NavUtilLib.GlobalVariables.FlightData.rwyIdx, NavUtilLib.GlobalVariables.FlightData.rwyList.Count - 1, 0);
+//        }
+
+//        if (GUI.tooltip == "rwyOn")
+//            rwyHover = true;
+//        else
+//            rwyHover = false;
+
+
+//        if (GUI.Button(gsBtn, new GUIContent("Next G/S", "gsOn")))
+//        {
+//            if (Event.current.button == 0)
+//            {
+//                NavUtilLib.GlobalVariables.FlightData.gsIdx++;
+//            }
+//            else
+//            {
+//                NavUtilLib.GlobalVariables.FlightData.gsIdx--;
+//            }
+
+//            NavUtilLib.GlobalVariables.FlightData.gsIdx = NavUtilLib.Utils.indexChecker(NavUtilLib.GlobalVariables.FlightData.gsIdx, NavUtilLib.GlobalVariables.FlightData.gsList.Count - 1, 0);
+//        }
+
+
+//        if (GUI.tooltip == "gsOn")
+//            gsHover = true;
+//        else
+//            gsHover = false;
+
+//        DrawGauge(rt);
+//        GUI.DrawTexture(new Rect(0, 0, windowPosition.width, windowPosition.height), rt, ScaleMode.ScaleToFit);
+
+
+
+
+
+//        GUI.DragWindow();
+//    }
+
+
+//}

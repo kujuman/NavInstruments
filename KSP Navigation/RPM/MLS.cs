@@ -104,7 +104,7 @@ namespace KSFRPMHSI
             //    Debug.Log("Lat: " + v.latitude + " Lon: " + v.longitude + " GCD: " + NavUtilLib.Utils.CalcGreatCircleDistance(v.latitude, v.longitude, r.gsLatitude, r.gsLongitude, r.body));
             //}
 
-            Debug.Log("ButtonID: " + buttonID);
+            //Debug.Log("ButtonID: " + buttonID);
 
             var.FlightData.rwyIdx = Utils.indexChecker(var.FlightData.rwyIdx, var.FlightData.rwyList.Count - 1, 0);
             var.FlightData.gsIdx = Utils.indexChecker(var.FlightData.gsIdx, var.FlightData.gsList.Count - 1, 0);

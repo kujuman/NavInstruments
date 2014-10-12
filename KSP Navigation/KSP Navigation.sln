@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NavUtilLib", "NavUtilLib\Na
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KSFRPMHSI", "RPM\KSFRPMHSI.csproj", "{C2C23187-A2E4-45FC-B0C4-3C0793B8594E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SANav", "StandAlone\SANav.csproj", "{837BDF09-DB12-45B3-B32A-0F557BAD2856}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{C2C23187-A2E4-45FC-B0C4-3C0793B8594E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2C23187-A2E4-45FC-B0C4-3C0793B8594E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C2C23187-A2E4-45FC-B0C4-3C0793B8594E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{837BDF09-DB12-45B3-B32A-0F557BAD2856}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{837BDF09-DB12-45B3-B32A-0F557BAD2856}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{837BDF09-DB12-45B3-B32A-0F557BAD2856}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{837BDF09-DB12-45B3-B32A-0F557BAD2856}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

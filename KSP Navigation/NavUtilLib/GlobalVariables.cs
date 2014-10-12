@@ -16,11 +16,11 @@ namespace NavUtilLib
 
 
 
-            public static Rect hsiPosition = new Rect(100,100,640,640);
+            public static Rect hsiPosition = new Rect(50,50,640,640);
             public static float hsiGUIscale = 0.5f;
             public static bool hsiState = false;
 
-            public static Rect settingsGUI = new Rect(100,50,250,130);
+            public static Rect settingsGUI = new Rect(100,50,250,180);
 
             public static Rect rwyEditorGUI = new Rect(50, 50, 450, 300);
             public static NavUtilGUI.RunwaysEditor rE = new NavUtilGUI.RunwaysEditor();
