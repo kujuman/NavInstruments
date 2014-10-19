@@ -30,6 +30,8 @@ namespace NavUtilLib
 
             public static bool enableFineLoc = true;
 
+            public static bool enableWindowsInIVA = true;
+
             public static void loadNavAids()
             {
                 Debug.Log("NavUtilLib: Loading NavAid database...");

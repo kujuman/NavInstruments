@@ -81,6 +81,11 @@ namespace NavUtilLib
             if (GUI.Button(new Rect(5, 150, 115, 20), "Custom Rwys"))
                 NavUtilLib.GlobalVariables.Settings.rE.startGUI();
 
+            //GUI.Label(new Rect(125, 150, 90, 20), "Popup in IVA?");
+
+            GlobalVariables.Settings.enableWindowsInIVA = GUI.Toggle(new Rect(125, 150, 120, 20), GlobalVariables.Settings.enableWindowsInIVA, "Popup in IVA?");
+
+
             NavUtilLib.GlobalVariables.Settings.hsiGUIscale = GUI.HorizontalSlider(new Rect(5, 105, 240, 30),NavUtilLib.GlobalVariables.Settings.hsiGUIscale, 0.1f, 1.0f);
 
             GUI.DragWindow();

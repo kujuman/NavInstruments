@@ -105,7 +105,7 @@ namespace NavUtilLib
         private void OnDraw()
         {
             //Debug.Log("HSI: OnDraw()");
-            if (CameraManager.Instance.currentCameraMode == CameraManager.CameraMode.Flight)
+            if (CameraManager.Instance.currentCameraMode == CameraManager.CameraMode.Flight || ((CameraManager.Instance.currentCameraMode == CameraManager.CameraMode.Internal || CameraManager.Instance.currentCameraMode == CameraManager.CameraMode.IVA) && GlobalVariables.Settings.enableWindowsInIVA))
             {
                 if ((windowPosition.xMin + windowPosition.width) < 20) windowPosition.xMin = 20 - windowPosition.width;
                 if (windowPosition.yMin + windowPosition.height < 20) windowPosition.yMin = 20 - windowPosition.height;

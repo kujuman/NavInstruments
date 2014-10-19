@@ -70,7 +70,7 @@ namespace NavUtilLib
 
             Vector3d up = (y - cBody.position).normalized;
 
-            double angle = Vector3.Angle(targetDir, up);
+            double angle = Vector3d.Angle(targetDir, up);
 
             //("Elevation angle = " + (angle - 90).ToString("F1") + "°");
 
