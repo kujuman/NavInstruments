@@ -16,22 +16,31 @@ namespace NavUtilLib
             ConfigNode runways = ConfigNode.Load(KSPUtil.ApplicationRootPath + sSettingURL);
             foreach (ConfigNode node in runways.GetNodes("Runway"))
             {
-                Runway rwy = new Runway();
+                try
+                {
+                    Runway rwy = new Runway();
 
-                rwy.ident = node.GetValue("ident");
-                rwy.hdg = float.Parse(node.GetValue("hdg"));
-                rwy.body = node.GetValue("body");
-                rwy.altMSL = float.Parse(node.GetValue("altMSL"));
-                rwy.gsLatitude = float.Parse(node.GetValue("gsLatitude"));
-                rwy.gsLongitude = float.Parse(node.GetValue("gsLongitude"));
-                rwy.locLatitude = float.Parse(node.GetValue("locLatitude"));
-                rwy.locLongitude = float.Parse(node.GetValue("locLongitude"));
+                    rwy.ident = node.GetValue("ident");
+                    rwy.hdg = float.Parse(node.GetValue("hdg"));
+                    rwy.body = node.GetValue("body");
+                    rwy.altMSL = float.Parse(node.GetValue("altMSL"));
+                    rwy.gsLatitude = float.Parse(node.GetValue("gsLatitude"));
+                    rwy.gsLongitude = float.Parse(node.GetValue("gsLongitude"));
+                    rwy.locLatitude = float.Parse(node.GetValue("locLatitude"));
+                    rwy.locLongitude = float.Parse(node.GetValue("locLongitude"));
 
-                rwy.outerMarkerDist = float.Parse(node.GetValue("outerMarkerDist"));
-                rwy.middleMarkerDist = float.Parse(node.GetValue("middleMarkerDist"));
-                rwy.innerMarkerDist = float.Parse(node.GetValue("innerMarkerDist"));
+                    rwy.outerMarkerDist = float.Parse(node.GetValue("outerMarkerDist"));
+                    rwy.middleMarkerDist = float.Parse(node.GetValue("middleMarkerDist"));
+                    rwy.innerMarkerDist = float.Parse(node.GetValue("innerMarkerDist"));
 
-                runwayList.Add(rwy);
+                    runwayList.Add(rwy);
+                }
+                catch (Exception)
+                {
+                    Debug.Log("NavUtil: Error loading runway");
+                    throw;
+                }
+
             }
 
             return runwayList;
@@ -40,29 +49,29 @@ namespace NavUtilLib
         public static void WriteCustomRunwaysToConfig(System.Collections.Generic.List<Runway> runwayList, string fileName)
         {
             ConfigNode runways = new ConfigNode();
-                foreach (Runway r in runwayList)
-                {
-                    ConfigNode rN = new ConfigNode();
+            foreach (Runway r in runwayList)
+            {
+                ConfigNode rN = new ConfigNode();
 
-                    rN.name = "Runway";
+                rN.name = "Runway";
 
-                    rN.AddValue("ident", r.ident);
-                    rN.AddValue("hdg",r.hdg);
-                    rN.AddValue("body", r.body);
-                    rN.AddValue("altMSL", r.altMSL);
-                    rN.AddValue("gsLatitude", r.gsLatitude);
-                    rN.AddValue("gsLongitude", r.gsLongitude);
-                    rN.AddValue("locLatitude", r.locLatitude);
-                    rN.AddValue("locLongitude", r.locLongitude);
+                rN.AddValue("ident", r.ident);
+                rN.AddValue("hdg", r.hdg);
+                rN.AddValue("body", r.body);
+                rN.AddValue("altMSL", r.altMSL);
+                rN.AddValue("gsLatitude", r.gsLatitude);
+                rN.AddValue("gsLongitude", r.gsLongitude);
+                rN.AddValue("locLatitude", r.locLatitude);
+                rN.AddValue("locLongitude", r.locLongitude);
 
-                    rN.AddValue("outerMarkerDist", r.outerMarkerDist);
-                    rN.AddValue("middleMarkerDist", r.middleMarkerDist);
-                    rN.AddValue("innerMarkerDist", r.innerMarkerDist);
+                rN.AddValue("outerMarkerDist", r.outerMarkerDist);
+                rN.AddValue("middleMarkerDist", r.middleMarkerDist);
+                rN.AddValue("innerMarkerDist", r.innerMarkerDist);
 
-                    runways.AddNode(rN);
-                }
+                runways.AddNode(rN);
+            }
 
-            runways.Save(KSPUtil.ApplicationRootPath + "GameData/KerbalScienceFoundation/NavInstruments/Runways/" + fileName,"CustomRunways");
+            runways.Save(KSPUtil.ApplicationRootPath + "GameData/KerbalScienceFoundation/NavInstruments/Runways/" + fileName, "CustomRunways");
         }
 
         public static System.Collections.Generic.List<float> GetGlideslopeListFromConfig(string sSettingURL)
@@ -82,16 +91,196 @@ namespace NavUtilLib
             return gsList;
         }
 
-        public static float GetGUIScale(string sSettingURL)
+        public static void LoadSettings(string sSettingURL)
         {
             ConfigNode settings = ConfigNode.Load(KSPUtil.ApplicationRootPath + sSettingURL);
-            float scale = 1;
 
-            foreach (ConfigNode node in settings.GetNodes("Main_Setting"))
+            foreach (ConfigNode node in settings.GetNodes("NavUtilSettings"))
             {
-                scale = float.Parse(node.GetValue("guiScale"));
+                try
+                {
+                    GlobalVariables.Settings.hsiGUIscale = float.Parse(node.GetValue("guiScale"));
+                }
+                catch (Exception)
+                {
+                    Debug.Log("NavUtil: Error loading guiScale from config");
+                    throw;
+                }
+                try
+                {
+                    GlobalVariables.Settings.enableFineLoc = bool.Parse(node.GetValue("enableFineLoc"));
+                }
+                catch (Exception)
+                {
+                    Debug.Log("NavUtil: Error loading enableFineLoc from config");
+                    throw;
+                }
+                try
+                {
+                    GlobalVariables.Settings.enableWindowsInIVA = bool.Parse(node.GetValue("enableWindowsInIVA"));
+                }
+                catch (Exception)
+                {
+                    Debug.Log("NavUtil: Error loading enableWindowsInIVA from config");
+                    throw;
+                }
+
+
+
+                try
+                {
+                    GlobalVariables.Settings.hsiPosition.x = float.Parse(node.GetValue("hsiPositionX"));
+                }
+                catch (Exception)
+                {
+                    Debug.Log("NavUtil: Error loading hsiPositionX from config");
+                    throw;
+                }
+                try
+                {
+                    GlobalVariables.Settings.hsiPosition.y = float.Parse(node.GetValue("hsiPositionY"));
+                }
+                catch (Exception)
+                {
+                    Debug.Log("NavUtil: Error loading hsiPositionY from config");
+                    throw;
+                }
+                try
+                {
+                    GlobalVariables.Settings.hsiPosition.width = float.Parse(node.GetValue("hsiPositionWidth"));
+                }
+                catch (Exception)
+                {
+                    Debug.Log("NavUtil: Error loading hsiPositionWidth from config");
+                    throw;
+                }
+                try
+                {
+                    GlobalVariables.Settings.hsiPosition.height = float.Parse(node.GetValue("hsiPositionHeight"));
+                }
+                catch (Exception)
+                {
+                    Debug.Log("NavUtil: Error loading hsiPositionHeight from config");
+                    throw;
+                }
+
+
+                try
+                {
+                    GlobalVariables.Settings.rwyEditorGUI.x = float.Parse(node.GetValue("rwyEditorGUIX"));
+                }
+                catch (Exception)
+                {
+                    Debug.Log("NavUtil: Error loading rwyEditorGUIX from config");
+                    throw;
+                }
+                try
+                {
+                    GlobalVariables.Settings.rwyEditorGUI.y = float.Parse(node.GetValue("rwyEditorGUIY"));
+                }
+                catch (Exception)
+                {
+                    Debug.Log("NavUtil: Error loading rwyEditorGUIY from config");
+                    throw;
+                }
+                try
+                {
+                    GlobalVariables.Settings.rwyEditorGUI.width = float.Parse(node.GetValue("rwyEditorGUIWidth"));
+                }
+                catch (Exception)
+                {
+                    Debug.Log("NavUtil: Error loading rwyEditorGUIWidth from config");
+                    throw;
+                }
+                try
+                {
+                    GlobalVariables.Settings.rwyEditorGUI.height = float.Parse(node.GetValue("rwyEditorGUIHeight"));
+                }
+                catch (Exception)
+                {
+                    Debug.Log("NavUtil: Error loading rwyEditorGUIHeight from config");
+                    throw;
+                }
+
+
+
+
+                try
+                {
+                    GlobalVariables.Settings.settingsGUI.x = float.Parse(node.GetValue("settingsGUIX"));
+                }
+                catch (Exception)
+                {
+                    Debug.Log("NavUtil: Error loading settingsGUIX from config");
+                    throw;
+                }
+                try
+                {
+                    GlobalVariables.Settings.settingsGUI.y = float.Parse(node.GetValue("settingsGUIY"));
+                }
+                catch (Exception)
+                {
+                    Debug.Log("NavUtil: Error loading settingsGUIY from config");
+                    throw;
+                }
+                try
+                {
+                    GlobalVariables.Settings.settingsGUI.width = float.Parse(node.GetValue("settingsGUIWidth"));
+                }
+                catch (Exception)
+                {
+                    Debug.Log("NavUtil: Error loading settingsGUIWidth from config");
+                    throw;
+                }
+                try
+                {
+                    GlobalVariables.Settings.settingsGUI.height = float.Parse(node.GetValue("settingsGUIHeight"));
+                }
+                catch (Exception)
+                {
+                    Debug.Log("NavUtil: Error loading settingsGUIHeight from config");
+                    throw;
+                }
             }
-            return scale;
+        }
+
+        public static void SaveSettings(string sSettingURL)
+        {
+            ConfigNode settings = new ConfigNode();
+
+            //settings.name = "NavUtilSettings";
+
+
+
+            ConfigNode sN = new ConfigNode();
+
+            sN.name = "NavUtilSettings";
+
+
+            sN.AddValue("guiScale", GlobalVariables.Settings.hsiGUIscale);
+            sN.AddValue("enableFineLoc", GlobalVariables.Settings.enableFineLoc);
+            sN.AddValue("enableWindowsInIVA", GlobalVariables.Settings.enableWindowsInIVA);
+            sN.AddValue("hsiPositionX", GlobalVariables.Settings.hsiPosition.x);
+            sN.AddValue("hsiPositionY", GlobalVariables.Settings.hsiPosition.y);
+            sN.AddValue("hsiPositionWidth", GlobalVariables.Settings.hsiPosition.width);
+            sN.AddValue("hsiPositionHeight", GlobalVariables.Settings.hsiPosition.height);
+            sN.AddValue("rwyEditorGUIX", GlobalVariables.Settings.rwyEditorGUI.x);
+            sN.AddValue("rwyEditorGUIY", GlobalVariables.Settings.rwyEditorGUI.y);
+            sN.AddValue("rwyEditorGUIWidth", GlobalVariables.Settings.rwyEditorGUI.width);
+            sN.AddValue("rwyEditorGUIHeight", GlobalVariables.Settings.rwyEditorGUI.height);
+            sN.AddValue("settingsGUIX", GlobalVariables.Settings.settingsGUI.x);
+            sN.AddValue("settingsGUIY", GlobalVariables.Settings.settingsGUI.y);
+            sN.AddValue("settingsGUIWidth", GlobalVariables.Settings.settingsGUI.width);
+            sN.AddValue("settingsGUIHeight", GlobalVariables.Settings.settingsGUI.height);
+
+            settings.AddNode(sN);
+
+            settings.Save(KSPUtil.ApplicationRootPath + sSettingURL, "NavUtil Setting File");
+
+
+            //ConfigNode settings = ConfigNode.Load();
+
         }
     }
 }
+

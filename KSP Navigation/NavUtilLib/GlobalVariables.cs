@@ -13,7 +13,7 @@ namespace NavUtilLib
         public static class Settings
         {
             public static string settingsFileURL = "GameData/KerbalScienceFoundation/NavInstruments/settings.cfg";
-
+            //public static string gsFileURL = "GameData/KerbalScienceFoundation/NavInstruments/glideslopes.cfg";
 
 
             public static Rect hsiPosition = new Rect(50,50,640,640);
@@ -36,9 +36,9 @@ namespace NavUtilLib
             {
                 Debug.Log("NavUtilLib: Loading NavAid database...");
                 FlightData.rwyList.Clear();
-                FlightData.rwyList = ConfigLoader.GetRunwayListFromConfig(settingsFileURL);
+                FlightData.rwyList = ConfigLoader.GetRunwayListFromConfig("GameData/KerbalScienceFoundation/NavInstruments/defaultRunways.cfg");
                 FlightData.gsList.Clear();
-                FlightData.gsList = ConfigLoader.GetGlideslopeListFromConfig(settingsFileURL);
+                FlightData.gsList = ConfigLoader.GetGlideslopeListFromConfig("GameData/KerbalScienceFoundation/NavInstruments/glideslopes.cfg");
 
                 FlightData.customRunways.Clear();
 
@@ -46,14 +46,14 @@ namespace NavUtilLib
 
                 if (folder.Exists)
                 {
-                    FileInfo[] addlNavAidFiles = folder.GetFiles("*_rwy.cfg");
+                    FileInfo[] addlNavAidFiles = folder.GetFiles("*.rwy");
 
                     foreach (FileInfo finfo in addlNavAidFiles)
                     {
-                        if(finfo.Name == "custom_rwy.cfg")
+                        if(finfo.Name == "custom.rwy")
                         {
                             FlightData.customRunways.AddRange(NavUtilLib.ConfigLoader.GetRunwayListFromConfig("GameData/KerbalScienceFoundation/NavInstruments/Runways/" + finfo.Name));
-                            Debug.Log("Found custom_rwy.cfg with "+ FlightData.customRunways.Count +" runway definitions");
+                            Debug.Log("Found custom.rwy with "+ FlightData.customRunways.Count +" runway definitions");
                             
                         }
 

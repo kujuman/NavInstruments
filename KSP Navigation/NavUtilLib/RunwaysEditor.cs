@@ -247,7 +247,7 @@ namespace NavUtilGUI
 
         public void WriteCustomRwys()
         {
-            NavUtilLib.ConfigLoader.WriteCustomRunwaysToConfig(NavUtilLib.GlobalVariables.FlightData.customRunways, "custom_rwy.cfg");
+            NavUtilLib.ConfigLoader.WriteCustomRunwaysToConfig(NavUtilLib.GlobalVariables.FlightData.customRunways, "custom.rwy");
         }
 
     }

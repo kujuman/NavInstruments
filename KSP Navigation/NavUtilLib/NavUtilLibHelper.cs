@@ -85,6 +85,9 @@ namespace NavUtilLib
                 //if (!var.Audio.isLoaded)
                 var.Audio.initializeAudio();
 
+                //load settings to config
+                ConfigLoader.LoadSettings(var.Settings.settingsFileURL);
+
                 //ConfigureCamera();
 
                 windowPosition.x = NavUtilLib.GlobalVariables.Settings.hsiPosition.x;
@@ -92,6 +95,9 @@ namespace NavUtilLib
 
 
                 Debug.Log("ILS: Systems started successfully!");
+
+
+
             }
             else
             {
@@ -99,6 +105,9 @@ namespace NavUtilLib
                 RenderingManager.RemoveFromPostDrawQueue(3, OnDraw); //close the GUI
                 NavUtilLib.GlobalVariables.Settings.hsiPosition.x = windowPosition.x;
                 NavUtilLib.GlobalVariables.Settings.hsiPosition.y = windowPosition.y;
+
+                //save settings to config
+                ConfigLoader.SaveSettings(var.Settings.settingsFileURL);
             }
         }
 
