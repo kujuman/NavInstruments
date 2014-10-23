@@ -103,7 +103,7 @@ namespace NavUtilLib.Analog
 
 
 
-            Debug.Log("MLS: Starting systems...");
+            if (GlobalVariables.Settings.enableDebugging) Debug.Log("MLS: Starting systems...");
             if (!NavUtilLib.GlobalVariables.Settings.navAidsIsLoaded)
                 NavUtilLib.GlobalVariables.Settings.loadNavAids();
 
@@ -113,7 +113,7 @@ namespace NavUtilLib.Analog
             //if (!var.Audio.isLoaded)
             NavUtilLib.GlobalVariables.Audio.initializeAudio();
 
-            Debug.Log("MLS: Systems started successfully!");
+            if (GlobalVariables.Settings.enableDebugging) Debug.Log("MLS: Systems started successfully!");
 
         }
 

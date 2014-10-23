@@ -30,11 +30,15 @@ namespace NavUtilLib
 
             public static bool enableFineLoc = true;
 
+            public static bool loadCustom_rwyCFG = true;
+
             public static bool enableWindowsInIVA = true;
+
+            public static bool enableDebugging = false;
 
             public static void loadNavAids()
             {
-                Debug.Log("NavUtilLib: Loading NavAid database...");
+                if (enableDebugging) Debug.Log("NavUtil: Loading NavAid database...");
                 FlightData.rwyList.Clear();
                 FlightData.rwyList = ConfigLoader.GetRunwayListFromConfig("GameData/KerbalScienceFoundation/NavInstruments/defaultRunways.cfg");
                 FlightData.gsList.Clear();
@@ -46,21 +50,31 @@ namespace NavUtilLib
 
                 if (folder.Exists)
                 {
-                    FileInfo[] addlNavAidFiles = folder.GetFiles("*.rwy");
+                    //FileInfo[] addlNavAidFiles = folder.GetFiles("*.rwy"); //this works great :D
+                    FileInfo[] addlNavAidFiles = folder.GetFiles("*");
 
-                    foreach (FileInfo finfo in addlNavAidFiles)
+
+                    foreach (FileInfo f in addlNavAidFiles)
                     {
-                        if(finfo.Name == "custom.rwy")
+                        if (f.Name.EndsWith("_rwy.cfg") || f.Name.EndsWith(".rwy"))
                         {
-                            FlightData.customRunways.AddRange(NavUtilLib.ConfigLoader.GetRunwayListFromConfig("GameData/KerbalScienceFoundation/NavInstruments/Runways/" + finfo.Name));
-                            Debug.Log("Found custom.rwy with "+ FlightData.customRunways.Count +" runway definitions");
-                            
-                        }
 
-                        FlightData.rwyList.AddRange(NavUtilLib.ConfigLoader.GetRunwayListFromConfig("GameData/KerbalScienceFoundation/NavInstruments/Runways/" + finfo.Name));
-                        FlightData.gsList.AddRange(NavUtilLib.ConfigLoader.GetGlideslopeListFromConfig("GameData/KerbalScienceFoundation/NavInstruments/Runways/" + finfo.Name));
+                            if (enableDebugging)  Debug.Log("NavUtil: found file " + f.Name.ToString());
+
+                            if (f.Name == "custom.rwy" || (f.Name == "custom_rwy.cfg" && GlobalVariables.Settings.loadCustom_rwyCFG))
+                            {
+                                FlightData.customRunways.AddRange(NavUtilLib.ConfigLoader.GetRunwayListFromConfig("GameData/KerbalScienceFoundation/NavInstruments/Runways/" + f.Name));
+                                Debug.Log("NavUtil: Found " + f.Name + " with " + FlightData.customRunways.Count + " runway definitions");
+
+                            }
+
+                            if (enableDebugging) Debug.Log("NavUtil: Found " + f.Name);
+
+                            FlightData.rwyList.AddRange(NavUtilLib.ConfigLoader.GetRunwayListFromConfig("GameData/KerbalScienceFoundation/NavInstruments/Runways/" + f.Name));
+                            FlightData.gsList.AddRange(NavUtilLib.ConfigLoader.GetGlideslopeListFromConfig("GameData/KerbalScienceFoundation/NavInstruments/Runways/" + f.Name));
+                            //}
+                        }
                     }
-                    
                 }
 
                 navAidsIsLoaded = true;
@@ -149,7 +163,7 @@ namespace NavUtilLib
 
             public static void loadMaterials()
             {
-                Debug.Log("NavUtilLib: Updating materials...");
+                if (GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtilLib: Updating materials...");
                 string texName;
 
                 texName = "hsi_overlay.png";
@@ -213,13 +227,16 @@ namespace NavUtilLib
                 audioplayer = new GameObject();
                 markerAudio = new AudioSource();
 
-                Debug.Log("NavUtilLib: InitializingAudio...");
+                if (GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtilLib: InitializingAudio...");
                 markerAudio = audioplayer.AddComponent<AudioSource>();
                 markerAudio.volume = GameSettings.VOICE_VOLUME;
                 markerAudio.pan = 0;
                 markerAudio.dopplerLevel = 0;
                 markerAudio.bypassEffects = true;
                 markerAudio.loop = true;
+                markerAudio.rolloffMode = AudioRolloffMode.Linear;
+                markerAudio.transform.SetParent(FlightCamera.fetch.mainCamera.transform);
+                
 
                 isLoaded = true;
             }

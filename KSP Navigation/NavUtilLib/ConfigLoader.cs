@@ -16,11 +16,16 @@ namespace NavUtilLib
             ConfigNode runways = ConfigNode.Load(KSPUtil.ApplicationRootPath + sSettingURL);
             foreach (ConfigNode node in runways.GetNodes("Runway"))
             {
+                if (GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtil: Found Runway Node");
+
                 try
                 {
                     Runway rwy = new Runway();
 
                     rwy.ident = node.GetValue("ident");
+
+                    if (GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtil: Loading " + rwy.ident);
+
                     rwy.hdg = float.Parse(node.GetValue("hdg"));
                     rwy.body = node.GetValue("body");
                     rwy.altMSL = float.Parse(node.GetValue("altMSL"));
@@ -34,10 +39,12 @@ namespace NavUtilLib
                     rwy.innerMarkerDist = float.Parse(node.GetValue("innerMarkerDist"));
 
                     runwayList.Add(rwy);
+
+                    if (GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtil: Found " + rwy.ident);
                 }
                 catch (Exception)
                 {
-                    Debug.Log("NavUtil: Error loading runway");
+                    if (GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtil: Error loading runway");
                     throw;
                 }
 
@@ -124,6 +131,15 @@ namespace NavUtilLib
                     Debug.Log("NavUtil: Error loading enableWindowsInIVA from config");
                     throw;
                 }
+                try
+                {
+                    GlobalVariables.Settings.loadCustom_rwyCFG = bool.Parse(node.GetValue("loadCustom_rwyCFG"));
+                }
+                catch (Exception)
+                {
+                    Debug.Log("NavUtil: Error loading loadCustom_rwyCFG from config");
+                    throw;
+                }
 
 
 
@@ -145,24 +161,24 @@ namespace NavUtilLib
                     Debug.Log("NavUtil: Error loading hsiPositionY from config");
                     throw;
                 }
-                try
-                {
-                    GlobalVariables.Settings.hsiPosition.width = float.Parse(node.GetValue("hsiPositionWidth"));
-                }
-                catch (Exception)
-                {
-                    Debug.Log("NavUtil: Error loading hsiPositionWidth from config");
-                    throw;
-                }
-                try
-                {
-                    GlobalVariables.Settings.hsiPosition.height = float.Parse(node.GetValue("hsiPositionHeight"));
-                }
-                catch (Exception)
-                {
-                    Debug.Log("NavUtil: Error loading hsiPositionHeight from config");
-                    throw;
-                }
+                //try
+                //{
+                //    GlobalVariables.Settings.hsiPosition.width = float.Parse(node.GetValue("hsiPositionWidth"));
+                //}
+                //catch (Exception)
+                //{
+                //    Debug.Log("NavUtil: Error loading hsiPositionWidth from config");
+                //    throw;
+                //}
+                //try
+                //{
+                //    GlobalVariables.Settings.hsiPosition.height = float.Parse(node.GetValue("hsiPositionHeight"));
+                //}
+                //catch (Exception)
+                //{
+                //    Debug.Log("NavUtil: Error loading hsiPositionHeight from config");
+                //    throw;
+                //}
 
 
                 try
@@ -183,24 +199,24 @@ namespace NavUtilLib
                     Debug.Log("NavUtil: Error loading rwyEditorGUIY from config");
                     throw;
                 }
-                try
-                {
-                    GlobalVariables.Settings.rwyEditorGUI.width = float.Parse(node.GetValue("rwyEditorGUIWidth"));
-                }
-                catch (Exception)
-                {
-                    Debug.Log("NavUtil: Error loading rwyEditorGUIWidth from config");
-                    throw;
-                }
-                try
-                {
-                    GlobalVariables.Settings.rwyEditorGUI.height = float.Parse(node.GetValue("rwyEditorGUIHeight"));
-                }
-                catch (Exception)
-                {
-                    Debug.Log("NavUtil: Error loading rwyEditorGUIHeight from config");
-                    throw;
-                }
+                //try
+                //{
+                //    GlobalVariables.Settings.rwyEditorGUI.width = float.Parse(node.GetValue("rwyEditorGUIWidth"));
+                //}
+                //catch (Exception)
+                //{
+                //    Debug.Log("NavUtil: Error loading rwyEditorGUIWidth from config");
+                //    throw;
+                //}
+                //try
+                //{
+                //    GlobalVariables.Settings.rwyEditorGUI.height = float.Parse(node.GetValue("rwyEditorGUIHeight"));
+                //}
+                //catch (Exception)
+                //{
+                //    Debug.Log("NavUtil: Error loading rwyEditorGUIHeight from config");
+                //    throw;
+                //}
 
 
 
@@ -223,24 +239,24 @@ namespace NavUtilLib
                     Debug.Log("NavUtil: Error loading settingsGUIY from config");
                     throw;
                 }
-                try
-                {
-                    GlobalVariables.Settings.settingsGUI.width = float.Parse(node.GetValue("settingsGUIWidth"));
-                }
-                catch (Exception)
-                {
-                    Debug.Log("NavUtil: Error loading settingsGUIWidth from config");
-                    throw;
-                }
-                try
-                {
-                    GlobalVariables.Settings.settingsGUI.height = float.Parse(node.GetValue("settingsGUIHeight"));
-                }
-                catch (Exception)
-                {
-                    Debug.Log("NavUtil: Error loading settingsGUIHeight from config");
-                    throw;
-                }
+                //try
+                //{
+                //    GlobalVariables.Settings.settingsGUI.width = float.Parse(node.GetValue("settingsGUIWidth"));
+                //}
+                //catch (Exception)
+                //{
+                //    Debug.Log("NavUtil: Error loading settingsGUIWidth from config");
+                //    throw;
+                //}
+                //try
+                //{
+                //    GlobalVariables.Settings.settingsGUI.height = float.Parse(node.GetValue("settingsGUIHeight"));
+                //}
+                //catch (Exception)
+                //{
+                //    Debug.Log("NavUtil: Error loading settingsGUIHeight from config");
+                //    throw;
+                //}
             }
         }
 
@@ -260,18 +276,19 @@ namespace NavUtilLib
             sN.AddValue("guiScale", GlobalVariables.Settings.hsiGUIscale);
             sN.AddValue("enableFineLoc", GlobalVariables.Settings.enableFineLoc);
             sN.AddValue("enableWindowsInIVA", GlobalVariables.Settings.enableWindowsInIVA);
+            sN.AddValue("loadCustom_rwyCFG", GlobalVariables.Settings.loadCustom_rwyCFG);
             sN.AddValue("hsiPositionX", GlobalVariables.Settings.hsiPosition.x);
             sN.AddValue("hsiPositionY", GlobalVariables.Settings.hsiPosition.y);
-            sN.AddValue("hsiPositionWidth", GlobalVariables.Settings.hsiPosition.width);
-            sN.AddValue("hsiPositionHeight", GlobalVariables.Settings.hsiPosition.height);
+            //sN.AddValue("hsiPositionWidth", GlobalVariables.Settings.hsiPosition.width);
+            //sN.AddValue("hsiPositionHeight", GlobalVariables.Settings.hsiPosition.height);
             sN.AddValue("rwyEditorGUIX", GlobalVariables.Settings.rwyEditorGUI.x);
             sN.AddValue("rwyEditorGUIY", GlobalVariables.Settings.rwyEditorGUI.y);
-            sN.AddValue("rwyEditorGUIWidth", GlobalVariables.Settings.rwyEditorGUI.width);
-            sN.AddValue("rwyEditorGUIHeight", GlobalVariables.Settings.rwyEditorGUI.height);
+            //sN.AddValue("rwyEditorGUIWidth", GlobalVariables.Settings.rwyEditorGUI.width);
+            //sN.AddValue("rwyEditorGUIHeight", GlobalVariables.Settings.rwyEditorGUI.height);
             sN.AddValue("settingsGUIX", GlobalVariables.Settings.settingsGUI.x);
             sN.AddValue("settingsGUIY", GlobalVariables.Settings.settingsGUI.y);
-            sN.AddValue("settingsGUIWidth", GlobalVariables.Settings.settingsGUI.width);
-            sN.AddValue("settingsGUIHeight", GlobalVariables.Settings.settingsGUI.height);
+            //sN.AddValue("settingsGUIWidth", GlobalVariables.Settings.settingsGUI.width);
+            //sN.AddValue("settingsGUIHeight", GlobalVariables.Settings.settingsGUI.height);
 
             settings.AddNode(sN);
 

@@ -75,7 +75,7 @@ namespace NavUtilLib
 
                 rt = new RenderTexture(640, 640, 24, RenderTextureFormat.ARGB32);
 
-                Debug.Log("ILS: Starting systems...");
+                if (GlobalVariables.Settings.enableDebugging) Debug.Log("ILS: Starting systems...");
                 if (!var.Settings.navAidsIsLoaded)
                     var.Settings.loadNavAids();
 
@@ -94,7 +94,7 @@ namespace NavUtilLib
                 windowPosition.y = NavUtilLib.GlobalVariables.Settings.hsiPosition.y;
 
 
-                Debug.Log("ILS: Systems started successfully!");
+                if (GlobalVariables.Settings.enableDebugging) Debug.Log("ILS: Systems started successfully!");
 
 
 
@@ -105,9 +105,6 @@ namespace NavUtilLib
                 RenderingManager.RemoveFromPostDrawQueue(3, OnDraw); //close the GUI
                 NavUtilLib.GlobalVariables.Settings.hsiPosition.x = windowPosition.x;
                 NavUtilLib.GlobalVariables.Settings.hsiPosition.y = windowPosition.y;
-
-                //save settings to config
-                ConfigLoader.SaveSettings(var.Settings.settingsFileURL);
             }
         }
 
@@ -274,6 +271,9 @@ namespace NavUtilLib
 
             if (appButton != null)
             {
+                //save settings to config
+                ConfigLoader.SaveSettings(var.Settings.settingsFileURL);
+
                 ApplicationLauncher.Instance.RemoveModApplication(appButton);
             }
         }

@@ -115,7 +115,7 @@ namespace KSFRPMHSI
 
         public void Start()
         {
-            Debug.Log("MLS: Starting systems...");
+            if (var.Settings.enableDebugging) Debug.Log("MLS: Starting systems...");
             if (!var.Settings.navAidsIsLoaded)
                 var.Settings.loadNavAids();
 
@@ -125,7 +125,7 @@ namespace KSFRPMHSI
             //if (!var.Audio.isLoaded)
                 var.Audio.initializeAudio();
 
-            Debug.Log("MLS: Systems started successfully!");
+                if (var.Settings.enableDebugging) Debug.Log("MLS: Systems started successfully!");
 
             //doneLoading = true;
         }
