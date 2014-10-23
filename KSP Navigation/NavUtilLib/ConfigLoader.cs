@@ -140,6 +140,15 @@ namespace NavUtilLib
                     Debug.Log("NavUtil: Error loading loadCustom_rwyCFG from config");
                     throw;
                 }
+                try
+                {
+                    GlobalVariables.Settings.useBlizzy78ToolBar = bool.Parse(node.GetValue("useBlizzy78ToolBar"));
+                }
+                catch (Exception)
+                {
+                    Debug.Log("NavUtil: Error loading useBlizzy78ToolBar from config");
+                    throw;
+                }
 
 
 
@@ -199,6 +208,10 @@ namespace NavUtilLib
                     Debug.Log("NavUtil: Error loading rwyEditorGUIY from config");
                     throw;
                 }
+
+                //
+
+
                 //try
                 //{
                 //    GlobalVariables.Settings.rwyEditorGUI.width = float.Parse(node.GetValue("rwyEditorGUIWidth"));
@@ -277,6 +290,9 @@ namespace NavUtilLib
             sN.AddValue("enableFineLoc", GlobalVariables.Settings.enableFineLoc);
             sN.AddValue("enableWindowsInIVA", GlobalVariables.Settings.enableWindowsInIVA);
             sN.AddValue("loadCustom_rwyCFG", GlobalVariables.Settings.loadCustom_rwyCFG);
+            sN.AddValue("useBlizzy78ToolBar", GlobalVariables.Settings.useBlizzy78ToolBar);
+
+
             sN.AddValue("hsiPositionX", GlobalVariables.Settings.hsiPosition.x);
             sN.AddValue("hsiPositionY", GlobalVariables.Settings.hsiPosition.y);
             //sN.AddValue("hsiPositionWidth", GlobalVariables.Settings.hsiPosition.width);

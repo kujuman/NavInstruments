@@ -8,8 +8,8 @@
     <ProjectGuid>{837BDF09-DB12-45B3-B32A-0F557BAD2856}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NavUtilGUI</RootNamespace>
-    <AssemblyName>NavUtilGUI</AssemblyName>
+    <RootNamespace>NavUtilToolBar</RootNamespace>
+    <AssemblyName>NavUtilToolBar</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -39,6 +39,7 @@
     <Reference Include="System" />
     <Reference Include="Toolbar">
       <HintPath>..\..\..\References\Toolbar.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\References\UnityEngine.dll</HintPath>

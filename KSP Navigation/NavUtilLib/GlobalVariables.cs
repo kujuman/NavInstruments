@@ -31,8 +31,11 @@ namespace NavUtilLib
             public static bool enableFineLoc = true;
 
             public static bool loadCustom_rwyCFG = true;
+            public static bool useBlizzy78ToolBar = false;
 
             public static bool enableWindowsInIVA = true;
+
+            public static int appInstance;
 
             public static bool enableDebugging = false;
 
@@ -64,7 +67,7 @@ namespace NavUtilLib
                             if (f.Name == "custom.rwy" || (f.Name == "custom_rwy.cfg" && GlobalVariables.Settings.loadCustom_rwyCFG))
                             {
                                 FlightData.customRunways.AddRange(NavUtilLib.ConfigLoader.GetRunwayListFromConfig("GameData/KerbalScienceFoundation/NavInstruments/Runways/" + f.Name));
-                                Debug.Log("NavUtil: Found " + f.Name + " with " + FlightData.customRunways.Count + " runway definitions");
+                                if (enableDebugging)  Debug.Log("NavUtil: Found " + f.Name + " with " + FlightData.customRunways.Count + " runway definitions");
 
                             }
 

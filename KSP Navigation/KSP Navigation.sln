@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KSFRPMHSI", "RPM\KSFRPMHSI.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AircraftAutoPilot", "AircraftAutoPilot\AircraftAutoPilot.csproj", "{0952AB77-FC7F-474E-9EA3-28C295229AD4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SANav", "StandAlone\SANav.csproj", "{837BDF09-DB12-45B3-B32A-0F557BAD2856}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{0952AB77-FC7F-474E-9EA3-28C295229AD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0952AB77-FC7F-474E-9EA3-28C295229AD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0952AB77-FC7F-474E-9EA3-28C295229AD4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{837BDF09-DB12-45B3-B32A-0F557BAD2856}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{837BDF09-DB12-45B3-B32A-0F557BAD2856}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{837BDF09-DB12-45B3-B32A-0F557BAD2856}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{837BDF09-DB12-45B3-B32A-0F557BAD2856}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

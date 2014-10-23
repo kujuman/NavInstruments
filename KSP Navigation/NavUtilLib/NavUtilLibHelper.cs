@@ -9,7 +9,7 @@ using var = NavUtilLib.GlobalVariables;
 
 namespace NavUtilLib
 {
-    [KSPAddon(KSPAddon.Startup.Flight, false)]
+    [KSPAddon(KSPAddon.Startup.Flight, false)] //used to start up in flight, and be false
     public class NavUtilLibApp : MonoBehaviour
     {
         //this class is to help load textures via GameDatabase since we cannot use static classes
@@ -50,7 +50,7 @@ namespace NavUtilLib
         private bool gsHover = false;
         private bool closeHover = false;
 
-        private void displayHSI()
+        public void displayHSI()
         {
             if (!NavUtilLib.GlobalVariables.Settings.hsiState)
             {
@@ -255,11 +255,21 @@ namespace NavUtilLib
 
         void Awake()
         {
-            GameEvents.onGUIApplicationLauncherReady.Add(OnGUIReady);
+            //load settings to config
+            ConfigLoader.LoadSettings(var.Settings.settingsFileURL);
 
-            GameEvents.onGameSceneLoadRequested.Add(dEstroy);
+            if(NavUtilLib.GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtil: useBlizzy? " + NavUtilLib.GlobalVariables.Settings.useBlizzy78ToolBar);
+
+            if (!NavUtilLib.GlobalVariables.Settings.useBlizzy78ToolBar)
+            {
 
 
+                GameEvents.onGUIApplicationLauncherReady.Add(OnGUIReady);
+
+                GameEvents.onGameSceneLoadRequested.Add(dEstroy);
+            }
+
+            NavUtilLib.GlobalVariables.Settings.appInstance = this.GetInstanceID();
         }
 
 
@@ -282,7 +292,7 @@ namespace NavUtilLib
 
         void OnGUIReady()
         {
-            if (ApplicationLauncher.Ready)
+            if (ApplicationLauncher.Ready && !NavUtilLib.GlobalVariables.Settings.useBlizzy78ToolBar)
             {
                 appButton = ApplicationLauncher.Instance.AddModApplication(
                     onAppLaunchToggleOn,
