@@ -26,6 +26,11 @@ namespace NavUtilLib
 
                     if (GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtil: Loading " + rwy.ident);
 
+                    
+                    rwy.shortID = node.GetValue("shortID");
+                    if (rwy.shortID.Length > 4)
+                        rwy.shortID.Remove(4);
+
                     rwy.hdg = float.Parse(node.GetValue("hdg"));
                     rwy.body = node.GetValue("body");
                     rwy.altMSL = float.Parse(node.GetValue("altMSL"));
@@ -63,6 +68,7 @@ namespace NavUtilLib
                 rN.name = "Runway";
 
                 rN.AddValue("ident", r.ident);
+                rN.AddValue("shortID", r.shortID);
                 rN.AddValue("hdg", r.hdg);
                 rN.AddValue("body", r.body);
                 rN.AddValue("altMSL", r.altMSL);

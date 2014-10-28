@@ -5,11 +5,11 @@ VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NavUtilLib", "NavUtilLib\NavUtilLib.csproj", "{647510F3-2DFF-43BE-9B31-86D83E540BB9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KSFRPMHSI", "RPM\KSFRPMHSI.csproj", "{C2C23187-A2E4-45FC-B0C4-3C0793B8594E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NavUtilRPM", "RPM\NavUtilRPM.csproj", "{C2C23187-A2E4-45FC-B0C4-3C0793B8594E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AircraftAutoPilot", "AircraftAutoPilot\AircraftAutoPilot.csproj", "{0952AB77-FC7F-474E-9EA3-28C295229AD4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SANav", "StandAlone\SANav.csproj", "{837BDF09-DB12-45B3-B32A-0F557BAD2856}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NavUtilToolBar", "StandAlone\NavUtilToolBar.csproj", "{837BDF09-DB12-45B3-B32A-0F557BAD2856}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

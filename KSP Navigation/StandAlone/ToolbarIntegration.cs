@@ -82,6 +82,10 @@ class btnCreate : MonoBehaviour
         IButton option3 = menu.AddOption("Custom Runways");
         option3.OnClick += (e2) => NavUtilLib.GlobalVariables.Settings.rE.startGUI();
 
+        IButton option4 = menu.AddOption("Save Window Layout");
+        option4.OnClick += (e2) => NavUtilLib.ConfigLoader.SaveSettings(NavUtilLib.GlobalVariables.Settings.settingsFileURL);
+
+
         menu.OnAnyOptionClicked += () => destroyPopupMenu(button);
 
         button.Drawable = menu;

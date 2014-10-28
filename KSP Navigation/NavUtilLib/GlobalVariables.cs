@@ -59,7 +59,7 @@ namespace NavUtilLib
 
                     foreach (FileInfo f in addlNavAidFiles)
                     {
-                        if (f.Name.EndsWith("_rwy.cfg") || f.Name.EndsWith(".rwy"))
+                        if ((f.Name.EndsWith("_rwy.cfg") && loadCustom_rwyCFG)|| f.Name.EndsWith(".rwy"))
                         {
 
                             if (enableDebugging)  Debug.Log("NavUtil: found file " + f.Name.ToString());
@@ -223,14 +223,19 @@ namespace NavUtilLib
             public static bool isLoaded = false;
             
             public static GameObject audioplayer; 
-            public static AudioSource markerAudio; 
+            public static AudioSource markerAudio;
+            //public static AudioSource playOnce;
 
             public static void initializeAudio()
             {
                 audioplayer = new GameObject();
                 markerAudio = new AudioSource();
+                //playOnce = new AudioSource();
 
                 if (GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtilLib: InitializingAudio...");
+
+                try
+                {
                 markerAudio = audioplayer.AddComponent<AudioSource>();
                 markerAudio.volume = GameSettings.VOICE_VOLUME;
                 markerAudio.pan = 0;
@@ -239,7 +244,25 @@ namespace NavUtilLib
                 markerAudio.loop = true;
                 markerAudio.rolloffMode = AudioRolloffMode.Linear;
                 markerAudio.transform.SetParent(FlightCamera.fetch.mainCamera.transform);
+
+                //playOnce = audioplayer.AddComponent<AudioSource>();
+                //playOnce.volume = GameSettings.VOICE_VOLUME;
+                //playOnce.pan = 0;
+                //playOnce.dopplerLevel = 0;
+                //playOnce.bypassEffects = true;
+                //playOnce.loop = false;
+                //playOnce.rolloffMode = AudioRolloffMode.Linear;
+                //playOnce.transform.SetParent(FlightCamera.fetch.mainCamera.transform);
+
                 
+                }
+                catch (Exception)
+                {
+                    if (NavUtilLib.GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtil: Error Loading Audio");
+
+                    throw;
+                }
+
 
                 isLoaded = true;
             }

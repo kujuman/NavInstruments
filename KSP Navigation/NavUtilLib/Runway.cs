@@ -9,6 +9,8 @@ namespace NavUtilLib
         //[KSPField]
         public string ident = "runwayID";
 
+        public string shortID = "sID4";
+
         //[KSPField]
         public float hdg = 90;
 

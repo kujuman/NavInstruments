@@ -34,6 +34,7 @@ namespace NavUtilLib
             }
         }
 
+
         private static void OnDraw()
         {
             if ((guiwindowPosition.xMin + guiwindowPosition.width) < 20) guiwindowPosition.xMin = 20 - guiwindowPosition.width;

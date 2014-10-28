@@ -3,6 +3,7 @@
 Runway
 {
 	ident = Administration Helipad
+	shortID = H-AD
 	hdg = 90
 	body = Kerbin
 	altMSL = 82

@@ -7,8 +7,8 @@
     <ProjectGuid>{C2C23187-A2E4-45FC-B0C4-3C0793B8594E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>KSFRPMHSI</RootNamespace>
-    <AssemblyName>RPMHSI</AssemblyName>
+    <RootNamespace>NavUtilRPM</RootNamespace>
+    <AssemblyName>NavUtilRPM</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -47,7 +47,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MLS.cs" />
+    <Compile Include="HSI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

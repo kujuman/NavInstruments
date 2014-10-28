@@ -1,7 +1,8 @@
 Runway
 {
 	ident = KSC VAB East
-	hdg = 180
+		shortID = H-VE
+	hdg = 270
 	body = Kerbin
 	altMSL = 176
 	gsLatitude = -0.096779520816
@@ -17,7 +18,8 @@ Runway
 Runway
 {
 	ident = KSC VAB West
-	hdg = 0
+		shortID = H-VW
+	hdg = 90
 	body = Kerbin
 	altMSL = 176
 	gsLatitude = -0.09677440548751

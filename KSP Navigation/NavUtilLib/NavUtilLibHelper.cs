@@ -54,7 +54,6 @@ namespace NavUtilLib
         {
             if (!NavUtilLib.GlobalVariables.Settings.hsiState)
             {
-
                 Activate(true);
 
                 NavUtilLib.GlobalVariables.Settings.hsiState = true;
@@ -75,7 +74,7 @@ namespace NavUtilLib
 
                 rt = new RenderTexture(640, 640, 24, RenderTextureFormat.ARGB32);
 
-                if (GlobalVariables.Settings.enableDebugging) Debug.Log("ILS: Starting systems...");
+                if (GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtil: Starting systems...");
                 if (!var.Settings.navAidsIsLoaded)
                     var.Settings.loadNavAids();
 
@@ -94,7 +93,7 @@ namespace NavUtilLib
                 windowPosition.y = NavUtilLib.GlobalVariables.Settings.hsiPosition.y;
 
 
-                if (GlobalVariables.Settings.enableDebugging) Debug.Log("ILS: Systems started successfully!");
+                if (GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtil: Systems started successfully!");
 
 
 
@@ -105,6 +104,8 @@ namespace NavUtilLib
                 RenderingManager.RemoveFromPostDrawQueue(3, OnDraw); //close the GUI
                 NavUtilLib.GlobalVariables.Settings.hsiPosition.x = windowPosition.x;
                 NavUtilLib.GlobalVariables.Settings.hsiPosition.y = windowPosition.y;
+
+                ConfigLoader.SaveSettings(var.Settings.settingsFileURL);
             }
         }
 
@@ -270,6 +271,8 @@ namespace NavUtilLib
             }
 
             NavUtilLib.GlobalVariables.Settings.appInstance = this.GetInstanceID();
+
+
         }
 
 
@@ -283,6 +286,8 @@ namespace NavUtilLib
             {
                 //save settings to config
                 ConfigLoader.SaveSettings(var.Settings.settingsFileURL);
+
+                NavUtilLib.GlobalVariables.Settings.hsiState = false;
 
                 ApplicationLauncher.Instance.RemoveModApplication(appButton);
             }
@@ -338,6 +343,7 @@ namespace NavUtilLib
             ////Debug.Log(appButton.transform.ToString());
             //Debug.Log(appButton.transform.position.ToString());
             //Debug.Log();
+
 
 
         }
