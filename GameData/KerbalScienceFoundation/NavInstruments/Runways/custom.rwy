@@ -3,7 +3,7 @@
 Runway
 {
 	ident = Administration Helipad
-	shortID = H-AD
+		shortID = H-AD
 	hdg = 90
 	body = Kerbin
 	altMSL = 82
@@ -14,4 +14,19 @@ Runway
 	outerMarkerDist = -1000
 	middleMarkerDist = -1000
 	innerMarkerDist = -1000
+}
+Runway
+{
+	ident = Prado Deposit
+		shortID = PR00
+	hdg = 357
+	body = Kerbin
+	altMSL = 1773
+	gsLatitude = 2.017444
+	gsLongitude = -79.32069
+	locLatitude = 2.112806
+	locLongitude = -79.3257
+	outerMarkerDist = 6500
+	middleMarkerDist = 1300
+	innerMarkerDist = 20
 }

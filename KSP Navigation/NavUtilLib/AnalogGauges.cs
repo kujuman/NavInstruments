@@ -474,7 +474,7 @@ namespace NavUtilLib.Analog
     {
         public static float numberRot(float value, float dec)
         {
-            float amt = (int)(value/1) * 36 + 18;
+            float amt = (int)(value/1) * 36;
 
             if((value %1) <= .9f || (int)(value * 10) % 10 <= .9f)
             {
