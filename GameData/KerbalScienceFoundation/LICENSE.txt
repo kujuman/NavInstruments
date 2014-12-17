@@ -2,4 +2,4 @@ NavUtilities software (code and compiled binaries) for Kerbal Space Program by k
 
 The artwork (models, sounds, textures) in this package is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.
 
-AnalogHSI_01 prop model and textures by nli2work
+AnalogHSI prop model and textures by nli2work
