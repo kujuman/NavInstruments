@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using KSP;
 
-using var = NavUtilLib.GlobalVariables;
+using gvar = NavUtilLib.GlobalVariables;
 
 namespace NavUtilLib
 {
@@ -21,11 +21,11 @@ namespace NavUtilLib
 
             public static double timer;
 
-            private static byte inBeaconArea(float locDeviation, Vessel v, Runway r)
+            private static byte inBeaconArea(double locDeviation, Vessel v, Runway r)
             {
-                if (3f > locDeviation && locDeviation > -3f)
+                if (3d > locDeviation && locDeviation > -3d)
                 {
-                    var gcd = NavUtilLib.Utils.CalcGreatCircleDistance(v.latitude, v.longitude, r.gsLatitude, r.gsLongitude, r.body);
+                    double gcd = NavUtilLib.Utils.CalcGreatCircleDistance(v.latitude, v.longitude, r.gsLatitude, r.gsLongitude, r.body);
 
                     if (r.outerMarkerDist + 200 > gcd && r.outerMarkerDist - 200 < gcd)
                     {
@@ -45,17 +45,17 @@ namespace NavUtilLib
 
             public static void DrawHSI(RenderTexture screen, float aspectRatio)
             {
-                var.FlightData.updateNavigationData();
+			gvar.FlightData.updateNavigationData();
 
                 locFlag = bcFlag = false;
                 gsFlag = true; 
 
 
 
-                if (var.FlightData.locDeviation > 10 && var.FlightData.locDeviation < 170 || var.FlightData.locDeviation < -10 && var.FlightData.locDeviation > -170)
+			if (gvar.FlightData.locDeviation > 10 && gvar.FlightData.locDeviation < 170 || gvar.FlightData.locDeviation < -10 && gvar.FlightData.locDeviation > -170)
                     locFlag = true;
 
-                if (var.FlightData.locDeviation < -90 || var.FlightData.locDeviation > 90)
+			if (gvar.FlightData.locDeviation < -90 || gvar.FlightData.locDeviation > 90)
                 {
                     bcFlag = true;
                 }
@@ -66,10 +66,10 @@ namespace NavUtilLib
                 GL.Viewport(new Rect(0, 0, screen.width, screen.height));
                 GL.Clear(true, true, Color.black);
 
-                screen = NavUtilLib.Graphics.drawMovedImage(var.Materials.Instance.back, screen, new Vector2(0, 0), false, true);
-                screen = NavUtilLib.Graphics.drawCenterRotatedImage(360 - FlightGlobals.ship_heading, new Vector2(.5f, .5f), var.Materials.Instance.headingCard, screen, 0, 0);
-                screen = NavUtilLib.Graphics.drawCenterRotatedImage(360 - FlightGlobals.ship_heading + (float)var.FlightData.bearing, new Vector2(.5f, .5f), var.Materials.Instance.NDBneedle, screen, 0, 0);
-                screen = NavUtilLib.Graphics.drawCenterRotatedImage(360 - FlightGlobals.ship_heading + (float)var.FlightData.selectedRwy.hdg, new Vector2(.5f, .5f), var.Materials.Instance.course, screen, 0, 0);
+			screen = NavUtilLib.Graphics.drawMovedImage(gvar.Materials.Instance.back, screen, new Vector2(0, 0), false, true);
+			screen = NavUtilLib.Graphics.drawCenterRotatedImage(360 - FlightGlobals.ship_heading, new Vector2(.5f, .5f), gvar.Materials.Instance.headingCard, screen, 0, 0);
+			screen = NavUtilLib.Graphics.drawCenterRotatedImage(360 - FlightGlobals.ship_heading + (float)gvar.FlightData.bearing, new Vector2(.5f, .5f), gvar.Materials.Instance.NDBneedle, screen, 0, 0);
+			screen = NavUtilLib.Graphics.drawCenterRotatedImage(360 - FlightGlobals.ship_heading + (float)gvar.FlightData.runwayHeading, new Vector2(.5f, .5f), gvar.Materials.Instance.course, screen, 0, 0);
 
                 bool fineLoc = false;
 
@@ -81,23 +81,23 @@ namespace NavUtilLib
                             fineLoc = true;
                     }
 
-                    float deviationCorrection;
+                    double deviationCorrection;
                     if (bcFlag)
                     {
-                        deviationCorrection = ((360 + var.FlightData.locDeviation) % 360 - 180) * 0.078125f;
-                        screen = NavUtilLib.Graphics.drawMovedImagePortion(var.Materials.Instance.flag, 0, .3125f, 0, 1, screen, new Vector2(.821875f, .1703125f), false);
+                        deviationCorrection = ((360d + gvar.FlightData.locDeviation) % 360d - 180d) * 0.078125d;
+                        screen = NavUtilLib.Graphics.drawMovedImagePortion(gvar.Materials.Instance.flag, 0, .3125f, 0, 1, screen, new Vector2(.821875f, .1703125f), false);
                     }
                     else //not backcourse
                     {
-                        deviationCorrection = var.FlightData.locDeviation * -.078125f;
+                        deviationCorrection = gvar.FlightData.locDeviation * -.078125d;
                     }
                     //if fineLoc == false then we use course guidance mode. In this mode each tick on Loc is 1°. in fine guidance mode each tick is 0.25°
 
                     string locMode = "Loc→Coarse Mode";
 
-                    if (fineLoc && Mathf.Abs(NavUtilLib.GlobalVariables.FlightData.locDeviation) < 0.75f)
+                    if (fineLoc && Math.Abs(NavUtilLib.GlobalVariables.FlightData.locDeviation) < 0.75d)
                     {
-                        deviationCorrection *= 4; //we're magnifying the needle deflection, which increases sensetivity
+                        deviationCorrection *= 4d; //we're magnifying the needle deflection, which increases sensetivity
 
                         //now to inform the user that fine control is enabled
                         locMode = "Loc→Fine Mode";
@@ -119,39 +119,44 @@ namespace NavUtilLib
                         screen = NavUtilLib.TextWriter.addTextToRT(screen, locMode, new Vector2(380, screen.height - 570), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, 0.5f);
                     }
 
-                    deviationCorrection = Mathf.Clamp(deviationCorrection, -0.234375f, 0.234375f);
+                    //deviationCorrection = Math.Clamp(deviationCorrection, -0.234375d, 0.234375d);
+					if (deviationCorrection < -0.234375d)
+						deviationCorrection = -0.234375d;
+					else if (deviationCorrection > 0.234375d)
+						deviationCorrection = 0.234375d;
 
 
-                    screen = NavUtilLib.Graphics.drawCenterRotatedImage(360 - FlightGlobals.ship_heading + (float)var.FlightData.selectedRwy.hdg, new Vector2(.5f, .5f), var.Materials.Instance.localizer, screen, deviationCorrection, 0);
+					screen = NavUtilLib.Graphics.drawCenterRotatedImage(360 - FlightGlobals.ship_heading + (float)gvar.FlightData.runwayHeading, new Vector2(.5f, .5f), gvar.Materials.Instance.localizer, screen, (float)deviationCorrection, 0);
                 }
                 else //draw flag
                 {
-                    screen = NavUtilLib.Graphics.drawMovedImagePortion(var.Materials.Instance.flag, .34375f, .65625f, 0, 1, screen, new Vector2(.821875f, 0.2046875f), false);
+                    screen = NavUtilLib.Graphics.drawMovedImagePortion(gvar.Materials.Instance.flag, .34375f, .65625f, 0, 1, screen, new Vector2(.821875f, 0.2046875f), false);
                 }
 
                 if(locFlag || !fineLoc)
                     NavUtilLib.GlobalVariables.Materials.Instance.NDBneedle.color = Color.white;
 
 
-                screen = NavUtilLib.Graphics.drawMovedImage(var.Materials.Instance.overlay, screen, new Vector2(0, 0), false, false);
+                screen = NavUtilLib.Graphics.drawMovedImage(gvar.Materials.Instance.overlay, screen, new Vector2(0, 0), false, false);
                 //marker beacons
                 //imageBox takes bottom x, 
-                if (var.FlightData.dme < 200000)
+                if (gvar.FlightData.dme < 200000)
                 {
-                    var fB = NavUtilLib.Utils.CalcBearingTo(Utils.CalcRadiansFromDeg(var.FlightData.selectedRwy.gsLongitude - var.FlightData.currentVessel.longitude),
-                                            Utils.CalcRadiansFromDeg(var.FlightData.currentVessel.latitude),
-                                            Utils.CalcRadiansFromDeg(var.FlightData.selectedRwy.gsLatitude));
+				/*
+                    double fB = NavUtilLib.Utils.CalcBearingTo(Utils.CalcRadiansFromDeg(gvar.FlightData.selectedRwy.gsLongitude - gvar.FlightData.currentVessel.longitude),
+                                            Utils.CalcRadiansFromDeg(gvar.FlightData.currentVessel.latitude),
+                                            Utils.CalcRadiansFromDeg(gvar.FlightData.selectedRwy.gsLatitude));
+				*/
+				double gsHorDev = Utils.CalcLocalizerDeviation(gvar.FlightData.currentVessel,gvar.FlightData.selectedRwy);
 
-                    var gsHorDev = Utils.CalcLocalizerDeviation(fB,var.FlightData.selectedRwy);
-
-                    if (Math.Abs(gsHorDev) < 25)
+                    if (Math.Abs(gsHorDev) < 25d)
                         gsFlag = false;
 
 
                     //checkmkrbcn
                     lastBcnCode = bcnCode;
 
-                    bcnCode = inBeaconArea(gsHorDev, var.FlightData.currentVessel,var.FlightData.selectedRwy);
+                    bcnCode = inBeaconArea(gsHorDev, gvar.FlightData.currentVessel,gvar.FlightData.selectedRwy);
 
                     bool drawUnlit = false;
 
@@ -162,15 +167,15 @@ namespace NavUtilLib
                         switch (bcnCode)
                         {
                             case 1:
-                                var.Audio.markerAudio.PlayOneShot(GameDatabase.Instance.GetAudioClip("KerbalScienceFoundation/NavInstruments/CommonAudio/outer"));
+                                gvar.Audio.markerAudio.PlayOneShot(GameDatabase.Instance.GetAudioClip("KerbalScienceFoundation/NavInstruments/CommonAudio/outer"));
                                 break;
 
                             case 2:
-                                var.Audio.markerAudio.PlayOneShot(GameDatabase.Instance.GetAudioClip("KerbalScienceFoundation/NavInstruments/CommonAudio/middle"));
+                                gvar.Audio.markerAudio.PlayOneShot(GameDatabase.Instance.GetAudioClip("KerbalScienceFoundation/NavInstruments/CommonAudio/middle"));
                                 break;
 
                             case 3:
-                                var.Audio.markerAudio.PlayOneShot(GameDatabase.Instance.GetAudioClip("KerbalScienceFoundation/NavInstruments/CommonAudio/inner"));
+                                gvar.Audio.markerAudio.PlayOneShot(GameDatabase.Instance.GetAudioClip("KerbalScienceFoundation/NavInstruments/CommonAudio/inner"));
                                 break;
 
                             default:
@@ -201,28 +206,28 @@ namespace NavUtilLib
                             break;
 
                         default:
-                            var.Audio.markerAudio.Stop();
+                            gvar.Audio.markerAudio.Stop();
                             break;
                     }
 
                     if (drawUnlit || bcnCode == 0)
                     {
-                        screen = NavUtilLib.Graphics.drawMovedImagePortion(var.Materials.Instance.mkrbcn, .75f, 1, 0, 1, screen, new Vector2(.046875f, .0203125f), false); ;
+                        screen = NavUtilLib.Graphics.drawMovedImagePortion(gvar.Materials.Instance.mkrbcn, .75f, 1, 0, 1, screen, new Vector2(.046875f, .0203125f), false); ;
                     }
                     else
                     {
                         switch (bcnCode)
                         {
                             case 1:
-                                screen = NavUtilLib.Graphics.drawMovedImagePortion(var.Materials.Instance.mkrbcn, .5f, .75f, 0, 1, screen, new Vector2(.046875f, .0203125f), false);
+                                screen = NavUtilLib.Graphics.drawMovedImagePortion(gvar.Materials.Instance.mkrbcn, .5f, .75f, 0, 1, screen, new Vector2(.046875f, .0203125f), false);
                                 break;
 
                             case 2:
-                                screen = NavUtilLib.Graphics.drawMovedImagePortion(var.Materials.Instance.mkrbcn, .25f, .5f, 0, 1, screen, new Vector2(.046875f, .0203125f), false);
+                                screen = NavUtilLib.Graphics.drawMovedImagePortion(gvar.Materials.Instance.mkrbcn, .25f, .5f, 0, 1, screen, new Vector2(.046875f, .0203125f), false);
                                 break;
 
                             case 3:
-                                screen = NavUtilLib.Graphics.drawMovedImagePortion(var.Materials.Instance.mkrbcn, 0f, .25f, 0, 1, screen, new Vector2(.046875f, .0203125f), false);
+                                screen = NavUtilLib.Graphics.drawMovedImagePortion(gvar.Materials.Instance.mkrbcn, 0f, .25f, 0, 1, screen, new Vector2(.046875f, .0203125f), false);
                                 break;
 
                             default:
@@ -232,20 +237,25 @@ namespace NavUtilLib
                 }
                 else
                 {
-                    screen = NavUtilLib.Graphics.drawMovedImagePortion(var.Materials.Instance.mkrbcn, .75f, 1, 0, 1, screen, new Vector2(.046875f, .0203125f), false);
+                    screen = NavUtilLib.Graphics.drawMovedImagePortion(gvar.Materials.Instance.mkrbcn, .75f, 1, 0, 1, screen, new Vector2(.046875f, .0203125f), false);
                 }
 
                 //find vertical location of pointer
-                float yO = -0.3125f * var.FlightData.gsDeviation;
+                double yO = -0.3125d * gvar.FlightData.gsDeviation;
                 //0.3125 per degree
-                yO = Mathf.Clamp(yO, -0.21875f, 0.21875f); //.7 degrees either direction
-                yO += 0.3609375f;
+                //yO = Mathf.Clamp(yO, -0.21875f, 0.21875f); //.7 degrees either direction
+				if (yO < -0.21875d)
+					yO = -0.21875d;
+				else if (yO > 0.21875d)
+					yO = 0.21875d;
+
+                yO += 0.3609375d;
 
 
                 if (gsFlag)
-                    screen = NavUtilLib.Graphics.drawMovedImagePortion(var.Materials.Instance.flag, .65625f, 1, 0, 1, screen, new Vector2(.821875f, 0.2390625f), false);
+                    screen = NavUtilLib.Graphics.drawMovedImagePortion(gvar.Materials.Instance.flag, .65625f, 1, 0, 1, screen, new Vector2(.821875f, 0.2390625f), false);
                 else
-                    screen = NavUtilLib.Graphics.drawMovedImage(var.Materials.Instance.pointer, screen, new Vector2(0.5f, yO), true, false);
+                    screen = NavUtilLib.Graphics.drawMovedImage(gvar.Materials.Instance.pointer, screen, new Vector2(0.5f, (float)yO), true, false);
 
                 GL.PopMatrix();
             }

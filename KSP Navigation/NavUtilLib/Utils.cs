@@ -11,20 +11,139 @@ namespace NavUtilLib
         /// <returns>double in degrees</returns>
         public static double CalcBearingToBeacon(Vessel thisVessel, Runway currentRwy)
         {
-            var lonDelta = currentRwy.locLongitude - thisVessel.longitude;
-            return Utils.CalcBearingTo(Utils.CalcRadiansFromDeg(lonDelta), Utils.CalcRadiansFromDeg(thisVessel.latitude), Utils.CalcRadiansFromDeg(currentRwy.locLatitude));
+			//Both bearing determinition methods produce identical results.
+
+			//Spherical coordinate bearing calculation
+			double lonDelta = (double)currentRwy.locLongitude - thisVessel.longitude;
+			return Utils.CalcBearingTo(Utils.CalcRadiansFromDeg(lonDelta), Utils.CalcRadiansFromDeg(thisVessel.latitude), Utils.CalcRadiansFromDeg(currentRwy.locLatitude));
+			//Debug.Log ("old bearing: " + Utils.CalcBearingTo (Utils.CalcRadiansFromDeg (lonDelta), Utils.CalcRadiansFromDeg (thisVessel.latitude), Utils.CalcRadiansFromDeg (currentRwy.locLatitude)).ToString ());
+
+			/*
+			//Vector projection based bearing calculation.
+			double bodyradius = FlightGlobals.Bodies.Find (body => body.name == currentRwy.body).Radius + (double)currentRwy.altMSL;
+
+			Vector3d rwy = SphericalToCartesianCoordinates(currentRwy.locLatitude, currentRwy.locLongitude, bodyradius);
+			Vector3d ship = SphericalToCartesianCoordinates (thisVessel.latitude, thisVessel.longitude, bodyradius);
+
+			Vector3d northpole = new Vector3d (0, bodyradius, 0);
+			Vector3d eastfromship = Vector3d.Cross (northpole, ship).normalized;
+			Vector3d northfromship = Vector3d.Cross (eastfromship, ship).normalized;
+
+			Vector3d shiptorwy = rwy - ship;
+
+			double northrange = Vector3d.Dot (northfromship, shiptorwy);
+			double eastrange = Vector3d.Dot (eastfromship, shiptorwy);
+			double ret = makeAngle0to360 (CalcDegFromRadians (Math.Atan2 (northrange, eastrange)) + 90d);
+
+			Debug.Log ("new bearing: " + ret.ToString ());
+
+			return ret;
+			*/
         }
 
-        /// <returns>float in degrees</returns>
-        public static float CalcLocalizerDeviation(double bearingToLoc, Runway currentRwy)
+		/// <returns>double in degrees</returns>
+		public static double CalcProjectedRunwayHeading(Vessel thisVessel, Runway currentRwy)
+		{
+			try
+			{
+				double bodyradius = FlightGlobals.Bodies.Find (body => body.name == currentRwy.body).Radius + (double)currentRwy.altMSL;
+
+				Vector3d rwy = SphericalToCartesianCoordinates(currentRwy.locLatitude, currentRwy.locLongitude, bodyradius);
+				Vector3d ship = SphericalToCartesianCoordinates (thisVessel.latitude, thisVessel.longitude, bodyradius);
+
+				Vector3d northpole = new Vector3d (0, bodyradius, 0);
+				Vector3d eastfromrwy = Vector3d.Cross (northpole, rwy).normalized;
+				Vector3d northfromrwy = Vector3d.Cross (eastfromrwy, rwy).normalized;
+				Vector3d eastfromship = Vector3d.Cross (northpole, ship).normalized;
+				Vector3d northfromship = Vector3d.Cross (eastfromship, ship).normalized;
+				double rwyheadingradians = -Utils.CalcRadiansFromDeg (currentRwy.hdg);
+				Vector3d rwynormalized = rwy.normalized;
+
+				//Rodrigues' rotation formula
+				//This vector represents the runway direction of travel in the plane of the runway normal to the surface (the surface plane).
+				Vector3d offsetloc = northfromrwy * Math.Cos (rwyheadingradians) + Vector3d.Cross (rwynormalized, northfromrwy) * Math.Sin (rwyheadingradians) + rwynormalized * Vector3d.Dot (rwynormalized, northfromrwy) * (1d - Math.Cos (rwyheadingradians));
+
+				//Project runway heading vector on to our bearing axes
+				double northportion = Vector3d.Dot (northfromship, offsetloc);
+				double eastportion = Vector3d.Dot (eastfromship, offsetloc);
+
+				double ret = makeAngle0to360 (CalcDegFromRadians (Math.Atan2 (northportion, eastportion)) - 90d);
+
+				//Debug.Log ("Old rwy heading: " + currentRwy.hdg.ToString());
+				//Debug.Log ("New rwy heading: " + ret.ToString ());
+
+				return ret;
+			}
+			catch (Exception ex)
+			{
+				Debug.LogError (ex.ToString ());
+				return 0d;
+			}
+		}
+
+        /// <returns>double in degrees</returns>
+		public static double CalcLocalizerDeviation(Vessel thisVessel, Runway currentRwy)
         {
-            var RwyHdgCorrection = 180 - Utils.makeAngle0to360(currentRwy.hdg);
-            
-            return (float) (Utils.makeAngle0to360(currentRwy.hdg + RwyHdgCorrection) - Utils.makeAngle0to360(bearingToLoc + RwyHdgCorrection));
+			try
+			{
+				/*
+				{
+					//Old algorithm.
+					double rwyhdg = (double)currentRwy.hdg;
+					double RwyHdgCorrection = 180d - Utils.makeAngle0to360(rwyhdg);
 
+					Debug.Log("Old answer: " + (Utils.makeAngle0to360(rwyhdg + RwyHdgCorrection) - Utils.makeAngle0to360(Utils.CalcBearingToBeacon(thisVessel, currentRwy) + RwyHdgCorrection)).ToString());
+				}
+				*/
 
-            //return (float)(Utils.makeAngle0to360(currentRwy.hdg) - Utils.makeAngle0to360(bearingToLoc)) * -1;
+				//We are going to measure the angle in the plane of the runway (normal to the surface).
+				//So, we will pretend everything is at this altitude.
+				double bodyradius = FlightGlobals.Bodies.Find (body => body.name == currentRwy.body).Radius + (double)currentRwy.altMSL;
+
+				Vector3d rwy = SphericalToCartesianCoordinates(currentRwy.locLatitude, currentRwy.locLongitude, bodyradius);
+				Vector3d ship = SphericalToCartesianCoordinates (thisVessel.latitude, thisVessel.longitude, bodyradius);
+
+				Vector3d northpole = new Vector3d (0, bodyradius, 0);
+				Vector3d eastfromrwy = Vector3d.Cross (northpole, rwy).normalized;
+				Vector3d northfromrwy = Vector3d.Cross (eastfromrwy, rwy).normalized;
+				double rwyheadingradians = -Utils.CalcRadiansFromDeg (currentRwy.hdg);
+				Vector3d rwynormalized = rwy.normalized;
+
+				//Rodrigues' rotation formula
+				//This vector represents the runway direction of travel in the plane of the runway normal to the surface (the surface plane).
+				Vector3d offsetloc = northfromrwy * Math.Cos (rwyheadingradians) + Vector3d.Cross (rwynormalized, northfromrwy) * Math.Sin (rwyheadingradians) + rwynormalized * Vector3d.Dot (rwynormalized, northfromrwy) * (1d - Math.Cos (rwyheadingradians));
+
+				//Normal for the plane encompassing the runway, in the direction of travel, and the center of the body (the centerline plane).
+				Vector3d planenormal = Vector3d.Cross (offsetloc, rwy).normalized;
+
+				//Distance left to right from the centerline plane.
+				double cldist = Vector3d.Dot (planenormal, ship);
+				//Distance forward and back to the plane encompassing the runway point, the runway normal, and the origin (how far in front or behind you are from the marker)
+				double fwbackdist = Vector3d.Dot (offsetloc.normalized, ship);
+
+				//We are computing the angle that is projected into the surface plane.
+				double ret = -CalcDegFromRadians(Math.Atan2 (cldist, fwbackdist));
+
+				//Debug.Log ("new answer: " + ret.ToString ());
+				return ret;
+			}
+			catch (Exception ex)
+			{
+				Debug.LogError (ex.ToString ());
+				return 0d;
+			}
         }
+
+		public static Vector3d SphericalToCartesianCoordinates(double lat, double lng, double radius)
+		{
+			lat = Utils.CalcRadiansFromDeg (lat);
+			lng = Utils.CalcRadiansFromDeg (lng);
+			double t = radius * Math.Cos (lat);
+			double y = radius * Math.Sin (lat);
+			double x = t * Math.Sin (lng);
+			double z = t * Math.Cos (lng);
+			return new Vector3d (x, y, z);
+		}
 
         ///<returns>double in meters</returns>
         public static double CalcDistanceToBeacon(Vessel thisVessel, Runway currentRwy)
@@ -79,11 +198,11 @@ namespace NavUtilLib
 
         public static double CalcBearingTo(double deltaLon, double startLat, double endLat)
         {
-            var y = Math.Sin(deltaLon) * Math.Cos(endLat);
+			double y = Math.Sin(deltaLon) * Math.Cos(endLat);
 
-            var x = (Math.Cos(startLat) * Math.Sin(endLat)) - (Math.Sin(startLat) * Math.Cos(endLat) * Math.Cos(deltaLon));
+			double x = (Math.Cos(startLat) * Math.Sin(endLat)) - (Math.Sin(startLat) * Math.Cos(endLat) * Math.Cos(deltaLon));
 
-            var brng = Math.Atan2(y, x);
+			double brng = Math.Atan2(y, x);
 
             brng = CalcDegFromRadians(brng);
 
@@ -127,14 +246,16 @@ namespace NavUtilLib
 
 
         #region working with angles tools
+		const double OneEightyOverPi = 180d / Math.PI;
         public static double CalcDegFromRadians(double radian)
         {
-            return radian * (180 / Math.PI);
+			return radian * OneEightyOverPi; // * (180 / Math.PI);
         }
 
+		const double PiOverOneEighty = Math.PI / 180d;
         public static double CalcRadiansFromDeg(double deg)
         {
-            return deg * (Math.PI / 180);
+			return deg * PiOverOneEighty; // * (Math.PI / 180);
         }
 
         public static double makeAngle0to360(double angle)

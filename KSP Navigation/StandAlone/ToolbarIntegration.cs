@@ -104,9 +104,25 @@ class btnCreate : MonoBehaviour
 
             Debug.Log("NavUtil: Found " + appInstaces.Count() + " app instances");
 
+<<<<<<< HEAD
             foreach (NavUtilLibApp a in appInstaces)
             {
                 Debug.Log("NavUtil: Match? " + NavUtilLib.GlobalVariables.Settings.appInstance + " " + a.GetInstanceID());
+=======
+    private void destroyPopupMenu(IButton button)
+    {
+        ((PopupMenuDrawable)button.Drawable).Destroy();
+
+        button.Drawable = null;
+    }
+
+
+    internal void OnDestroy()
+    {
+        b.Destroy();
+		NavUtilLib.GlobalVariables.Settings.hsiState = false;
+    }
+>>>>>>> pr/1
 
                 if (NavUtilLib.GlobalVariables.Settings.appInstance == a.GetInstanceID())
                 {
@@ -129,7 +145,25 @@ class btnCreate : MonoBehaviour
     }
 
 
+<<<<<<< HEAD
     private void destroyPopupMenu(IButton button)
+=======
+        NavUtilLib.TextWriter.addTextToRT(screen, NavUtilLib.Utils.numberFormatter((float)NavUtilLib.Utils.makeAngle0to360(FlightGlobals.ship_heading), true).ToString(), new Vector2(584, screen.height - 102), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
+        NavUtilLib.TextWriter.addTextToRT(screen, NavUtilLib.Utils.numberFormatter((float)NavUtilLib.Utils.makeAngle0to360(NavUtilLib.GlobalVariables.FlightData.bearing), true).ToString(), new Vector2(584, screen.height - 131), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
+        NavUtilLib.TextWriter.addTextToRT(screen, NavUtilLib.Utils.numberFormatter((float)NavUtilLib.Utils.makeAngle0to360(NavUtilLib.GlobalVariables.FlightData.selectedRwy.hdg), true).ToString(), new Vector2(35, screen.height - 124), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
+        NavUtilLib.TextWriter.addTextToRT(screen, NavUtilLib.Utils.numberFormatter((float)NavUtilLib.GlobalVariables.FlightData.dme / 1000, false).ToString(), new Vector2(45, screen.height - 563), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
+
+		//Debug.Log ("Bearing: " + NavUtilLib.Utils.makeAngle0to360(NavUtilLib.GlobalVariables.FlightData.bearing).ToString());
+		//Debug.Log ("Centerline dist: " + NavUtilLib.GlobalVariables.FlightData.DistanceFromCenterline.ToString());
+
+        if(closeHover)
+            NavUtilLib.TextWriter.addTextToRT(screen,"    Close HSI",new Vector2(340,15),NavUtilLib.GlobalVariables.Materials.Instance.whiteFont,.64f);
+
+        RenderTexture.active = pt;
+    }
+
+    private void OnWindow(int WindowID)
+>>>>>>> pr/1
     {
         ((PopupMenuDrawable)button.Drawable).Destroy();
 
