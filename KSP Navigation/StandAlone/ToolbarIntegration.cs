@@ -38,7 +38,7 @@ class btnCreate : MonoBehaviour
             b.TexturePath = "KerbalScienceFoundation/NavInstruments/CommonTextures/toolbarButton";
             b.ToolTip = "View Navigation Utilites";
             b.Visibility = new GameScenesVisibility(GameScenes.FLIGHT);
-            b.OnClick += (e) => togglePopupMenu(b);
+            b.OnClick += (e) => toggleToolbarButton(e, b);
 
             Debug.Log("NavUtil: Started ToolBar");
             //app = FindObjectOfType<NavUtilLibApp>();
@@ -46,50 +46,21 @@ class btnCreate : MonoBehaviour
     }
 
 
-    private void togglePopupMenu(IButton button)
+    private void toggleToolbarButton(ClickEvent e, IButton button)
     {
-        if (button.Drawable == null)
+        switch (e.MouseButton)
         {
-            createPopupMenu(button);
-        }
-        else
-        {
-            destroyPopupMenu(button);
+            case 0:     // left click
+                tryActivate();
+                break;
+            case 1:     // right click
+                NavUtilLib.SettingsGUI.startSettingsGUI();
+                break;
+            default:
+                break;
         }
     }
 
-
-    private void createPopupMenu(IButton button)
-    {
-        PopupMenuDrawable menu = new PopupMenuDrawable();
-
-        IButton option1 = menu.AddOption("Nav Utilities Options");
-        option1.OnClick += (e2) => NavUtilLib.SettingsGUI.startSettingsGUI();
-
-        if (NavUtilLib.GlobalVariables.Settings.hsiState)
-        {
-            IButton option2 = menu.AddOption("Close HSI Window");
-
-            option2.OnClick += (e2) => tryActivate();
-        }
-        else
-        {
-
-            IButton option2 = menu.AddOption("Open HSI Window");
-            option2.OnClick += (e2) => tryActivate();
-        }
-
-        IButton option3 = menu.AddOption("Custom Runways");
-        option3.OnClick += (e2) => NavUtilLib.GlobalVariables.Settings.rE.startGUI();
-
-        IButton option4 = menu.AddOption("Save Window Layout");
-        option4.OnClick += (e2) => NavUtilLib.ConfigLoader.SaveSettings(NavUtilLib.GlobalVariables.Settings.settingsFileURL);
-
-
-        menu.OnAnyOptionClicked += () => destroyPopupMenu(button);
-
-        button.Drawable = menu;
-    }
 
     private void tryActivate()
     {
@@ -126,14 +97,6 @@ class btnCreate : MonoBehaviour
         Debug.Log("NavUtil: Try to start app...");
 
             app.displayHSI();
-    }
-
-
-    private void destroyPopupMenu(IButton button)
-    {
-        ((PopupMenuDrawable)button.Drawable).Destroy();
-
-        button.Drawable = null;
     }
 
 
