@@ -130,4 +130,38 @@ namespace KSFRPMHSI
             //doneLoading = true;
         }
     }
+
+    public class KSF_AI : InternalModule
+    {
+
+        public bool DrawAI(RenderTexture screen, float aspectRatio)
+        {
+            NavUtilLib.GlobalVariables.FlightData.updateNavigationData();
+
+            NavUtilLib.DisplayData.DrawAI(screen, aspectRatio);
+
+
+            //NavUtilLib.TextWriter.addTextToRT(screen, "Runway: " + NavUtilLib.GlobalVariables.FlightData.selectedRwy.ident, new Vector2(20, screen.height - 40), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
+            //NavUtilLib.TextWriter.addTextToRT(screen, "Glideslope: " + string.Format("{0:F1}", NavUtilLib.GlobalVariables.FlightData.selectedGlideSlope) + "°  Elevation: " + string.Format("{0:F0}", NavUtilLib.GlobalVariables.FlightData.selectedRwy.altMSL) + "m", new Vector2(20, screen.height - 64), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
+
+            //NavUtilLib.TextWriter.addTextToRT(screen, NavUtilLib.Utils.numberFormatter((float)NavUtilLib.Utils.makeAngle0to360(FlightGlobals.ship_heading), true).ToString(), new Vector2(584, screen.height - 102), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
+            //NavUtilLib.TextWriter.addTextToRT(screen, NavUtilLib.Utils.numberFormatter((float)NavUtilLib.Utils.makeAngle0to360(NavUtilLib.GlobalVariables.FlightData.bearing), true).ToString(), new Vector2(584, screen.height - 131), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
+            //NavUtilLib.TextWriter.addTextToRT(screen, NavUtilLib.Utils.numberFormatter((float)NavUtilLib.Utils.makeAngle0to360(NavUtilLib.GlobalVariables.FlightData.selectedRwy.hdg), true).ToString(), new Vector2(35, screen.height - 124), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
+            //NavUtilLib.TextWriter.addTextToRT(screen, NavUtilLib.Utils.numberFormatter((float)NavUtilLib.GlobalVariables.FlightData.dme / 1000, false).ToString(), new Vector2(45, screen.height - 563), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, .64f);
+
+            return true;
+        }
+
+        public void Start()
+        {
+            if (var.Settings.enableDebugging) Debug.Log("NavUtils AI: Starting systems...");
+
+            if (!var.Materials.isLoaded)
+                var.Materials.loadMaterials();
+
+            if (var.Settings.enableDebugging) Debug.Log("NavUtils AI: Systems started successfully!");
+
+        }
+    }
+
 }

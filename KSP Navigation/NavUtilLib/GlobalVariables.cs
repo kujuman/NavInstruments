@@ -169,6 +169,13 @@ namespace NavUtilLib
             public Material back = null;
             public Material whiteFont = null;
 
+            public Material AI_overlay = null;
+            public Material AI_throttleBar = null;
+            public Material AI_VSILine = null;
+            public Material AI_Ladder = null;
+            public Material AI_Radar = null;
+            public Material AI_RadarDial = null;
+
             public static void loadMaterials()
             {
                 if (GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtilLib: Updating materials...");
@@ -203,7 +210,25 @@ namespace NavUtilLib
 
                 texName = "white_font.png";
                 Materials.Instance.whiteFont = Graphics.loadMaterial(texName, Materials.Instance.whiteFont, 256, 256);
-                 
+
+                texName = "AI_OVERLAY.png";
+                Materials.Instance.AI_overlay = Graphics.loadMaterial(texName, Materials.Instance.AI_overlay, 640, 640);
+
+                texName = "AI_THROTTLEBAR.png";
+                Materials.Instance.AI_throttleBar = Graphics.loadMaterial(texName, Materials.Instance.AI_throttleBar,27, 164);
+
+                texName = "AI_VSILINE.png";
+                Materials.Instance.AI_VSILine = Graphics.loadMaterial(texName, Materials.Instance.AI_VSILine, 33, 4);
+
+                texName = "AI_LADDER.png";
+                Materials.Instance.AI_Ladder = Graphics.loadMaterial(texName, Materials.Instance.AI_Ladder, 906, 2048);
+                
+                texName = "AI_RADAR.png";
+                Materials.Instance.AI_Radar = Graphics.loadMaterial(texName, Materials.Instance.AI_Radar, 179, 179);
+
+                texName = "AI_RADARDIAL.png";
+                Materials.Instance.AI_RadarDial = Graphics.loadMaterial(texName, Materials.Instance.AI_RadarDial, 86, 39);
+
                 isLoaded = true;
             }
         }

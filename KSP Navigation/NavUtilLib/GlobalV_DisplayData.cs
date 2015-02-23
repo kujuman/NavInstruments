@@ -249,6 +249,190 @@ namespace NavUtilLib
 
                 GL.PopMatrix();
             }
+
+
+            public static void DrawAI(RenderTexture screen, float aspectRatio)
+            {
+                var.FlightData.updateNavigationData();
+
+                //set up flags here
+
+
+                GL.PushMatrix();
+
+                GL.LoadPixelMatrix(0, screen.width, screen.height, 0);
+                GL.Viewport(new Rect(0, 0, screen.width, screen.height));
+                GL.Clear(true, true, Color.black);
+
+                screen = NavUtilLib.Graphics.drawMovedImage(var.Materials.Instance.back, screen, new Vector2(0, 0), false, true);
+
+
+
+                //Ladder Calc
+                float pxOffset = 0;
+                float partImgPer = 0.0015625f;
+
+                Vector3d surfVesRight = Vector3d.Cross((var.FlightData.currentVessel.findWorldCenterOfMass() - var.FlightData.currentVessel.mainBody.position).normalized, var.FlightData.currentVessel.ReferenceTransform.up).normalized;
+
+
+                float roll = (float)Vector3d.Angle(surfVesRight, var.FlightData.currentVessel.ReferenceTransform.right) * Math.Sign(Vector3d.Dot(surfVesRight, var.FlightData.currentVessel.ReferenceTransform.forward));
+
+                float pitch = (float)(90 - Vector3d.Angle((var.FlightData.currentVessel.findWorldCenterOfMass() - var.FlightData.currentVessel.mainBody.position).normalized, var.FlightData.currentVessel.ReferenceTransform.up));
+
+                if(pitch > 0)
+                {
+                    ;
+                }
+                if(pitch < 0)
+                {
+                    ;
+                }
+
+                pxOffset = Mathf.Clamp(pitch * -8f,-560,560);
+
+                pxOffset += 0;
+                pxOffset *= partImgPer;
+
+                //screen = NavUtilLib.Graphics.drawMovedImage(var.Materials.Instance.AI_Ladder, screen, new Vector2(0.5f, pxOffset), true, false);
+
+                screen = NavUtilLib.Graphics.drawCenterRotatedImage(roll,new Vector2(0.5f, 0.5f),var.Materials.Instance.AI_Ladder,screen,0,pxOffset);
+
+
+                screen = NavUtilLib.Graphics.drawMovedImage(var.Materials.Instance.AI_overlay, screen, new Vector2(0, 0), false, false);
+
+                NavUtilLib.TextWriter.addTextToRT(
+screen, "Pitch: " +
+string.Format("{0:F0}", pitch) + "   Roll: " + string.Format("{0:F0}", roll),
+new Vector2(20 + 2, 600 + 2),
+NavUtilLib.GlobalVariables.Materials.Instance.whiteFont,
+.5f);
+
+                //Throttle
+                screen = NavUtilLib.Graphics.drawMovedImagePortion(var.Materials.Instance.AI_throttleBar, 0, var.FlightData.currentVessel.ctrlState.mainThrottle, 0, 1, screen, new Vector2(partImgPer * 23, partImgPer * 239), false);
+
+                //VSI
+                //nominal y 318
+                //587
+                float metersPerMinute = 0;
+
+                metersPerMinute = (float)var.FlightData.currentVessel.verticalSpeed * 60;
+                if (100f >= metersPerMinute && metersPerMinute >= -100f)
+                {
+                    pxOffset = 0.4f * metersPerMinute;
+                }
+                else
+                {
+                    if (metersPerMinute > 50)
+                    {
+                         pxOffset = (metersPerMinute * 0.2f) + 20;
+                    }
+                    if (metersPerMinute < -50)
+                    {
+                        pxOffset = (metersPerMinute * 0.2f) - 20;
+                    }
+                }
+                pxOffset = Mathf.Clamp(pxOffset, -130, 130);
+                pxOffset += 318;
+
+                screen = NavUtilLib.Graphics.drawMovedImagePortion(var.Materials.Instance.AI_VSILine, 0, 1, 0, 1, screen, new Vector2(partImgPer * 587, partImgPer * pxOffset), false);
+
+
+                //DigitalSpeed
+                NavUtilLib.TextWriter.addTextToRT(
+                    screen,
+                    string.Format("{0:F0}", (float)var.FlightData.currentVessel.srfSpeed),
+                    new Vector2(111+2, 305 + 2),
+                    NavUtilLib.GlobalVariables.Materials.Instance.whiteFont,
+                    .5f);
+
+                //DigitalAlt
+                NavUtilLib.TextWriter.addTextToRT(
+    screen,
+    string.Format("{0:F0}", (float)var.FlightData.currentVessel.altitude),
+    new Vector2(464 + 2, 305 + 2),
+    NavUtilLib.GlobalVariables.Materials.Instance.whiteFont,
+    .5f);
+
+                //RdrAlt
+                float rdrAlt = 0;
+                //rdrAlt = Mathf.Max(0, (float)var.FlightData.currentVessel.pqsAltitude);
+                //int counter = 0;
+
+                rdrAlt = (float)var.FlightData.currentVessel.altitude;
+                rdrAlt -= (var.FlightData.currentVessel.terrainAltitude > 0) ? (float)var.FlightData.currentVessel.terrainAltitude : 0;
+                //Debug.Log("AI rdrAlt: " + rdrAlt);
+                if (rdrAlt < 750)
+                {
+                    float dialRot = 90;
+
+                    if (rdrAlt <= 10)
+                    {
+                        dialRot += rdrAlt * 4.5f;
+                        //counter += 1;
+                    }
+                    else
+
+                        if (rdrAlt <= 50)
+                        {
+                            dialRot += rdrAlt * 1.125f + 33.75f;
+                            //counter += 10;
+                        }
+                        else
+                            if (rdrAlt <= 100)
+                            {
+                                dialRot += rdrAlt * 0.9f + 45;
+                                //counter += 100;
+                            }
+                            else
+                                if (rdrAlt <= 200)
+                                {
+                                    dialRot += rdrAlt * 0.45f + 90;
+                                    //counter += 1000;
+                                }
+                                else
+                                    if (rdrAlt <= 500)
+                                    {
+                                        dialRot += rdrAlt * 0.3f + 120;
+                                        //counter += 10000;
+                                    }
+                                    else
+                                    {
+                                        dialRot = 0;
+                                        //counter += 100000;
+                                    }
+
+                    //Debug.Log("AI rdrAlt: " + rdrAlt.ToString() + " Ctr: " + counter.ToString() + " Rot: " + dialRot.ToString());
+
+                    screen = NavUtilLib.Graphics.drawMovedImage(var.Materials.Instance.AI_Radar, screen, new Vector2(partImgPer * 461, partImgPer * 2), false, false);
+                    screen = NavUtilLib.Graphics.drawCenterRotatedImage(dialRot, new Vector2(partImgPer * 549, partImgPer * 91), var.Materials.Instance.AI_RadarDial, screen, partImgPer * -26, partImgPer * 0);
+                    ;
+                    
+                }
+
+                
+                //screen = NavUtilLib.Graphics.drawCenterRotatedImage(360 - FlightGlobals.ship_heading, new Vector2(.5f, .5f), var.Materials.Instance.headingCard, screen, 0, 0);
+                
+                
+                //screen = NavUtilLib.Graphics.drawCenterRotatedImage(360 - FlightGlobals.ship_heading + (float)var.FlightData.bearing, new Vector2(.5f, .5f), var.Materials.Instance.NDBneedle, screen, 0, 0);
+                //screen = NavUtilLib.Graphics.drawCenterRotatedImage(360 - FlightGlobals.ship_heading + (float)var.FlightData.selectedRwy.hdg, new Vector2(.5f, .5f), var.Materials.Instance.course, screen, 0, 0);
+
+                //find vertical location of pointer
+                //float yO = -0.3125f * var.FlightData.gsDeviation;
+                ////0.3125 per degree
+                //yO = Mathf.Clamp(yO, -0.21875f, 0.21875f); //.7 degrees either direction
+                //yO += 0.3609375f;
+
+
+                //if (gsFlag)
+                //    screen = NavUtilLib.Graphics.drawMovedImagePortion(var.Materials.Instance.flag, .65625f, 1, 0, 1, screen, new Vector2(.821875f, 0.2390625f), false);
+                //else
+                //    screen = NavUtilLib.Graphics.drawMovedImage(var.Materials.Instance.pointer, screen, new Vector2(0.5f, yO), true, false);
+
+                GL.PopMatrix();
+            }
+
+
+
         }
 
 
