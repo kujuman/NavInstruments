@@ -37,6 +37,8 @@ namespace NavUtilLib
 
             public static int appInstance;
 
+            public static NavUtilLibApp appReference;
+
             public static bool enableDebugging = false;
 
             public static void loadNavAids()

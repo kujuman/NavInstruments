@@ -88,7 +88,9 @@ class btnCreate : MonoBehaviour
 
             }
 
-
+            //create a new app instance
+            Debug.Log("NavUtil: adding reference from GlobalVariables...");
+            app = NavUtilLib.GlobalVariables.Settings.appReference;
 
 
         Finish:

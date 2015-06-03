@@ -9,9 +9,11 @@ using var = NavUtilLib.GlobalVariables;
 
 namespace NavUtilLib
 {
-    [KSPAddon(KSPAddon.Startup.Flight, false)] //used to start up in flight, and be false
+    [KSPAddon(KSPAddon.Startup.MainMenu, true)] //used to start up in flight, and be false
     public class NavUtilLibApp : MonoBehaviour
     {
+
+
         //this class is to help load textures via GameDatabase since we cannot use static classes
 
         NavUtilLibApp app;
@@ -19,6 +21,8 @@ namespace NavUtilLib
         ApplicationLauncherButton appButton;
 
         public bool isHovering = false;
+
+        private bool visible = false;
 
         //RUIPanelTabGroup pTG;
 
@@ -52,6 +56,11 @@ namespace NavUtilLib
 
         public void displayHSI()
         {
+            if (NavUtilLib.GlobalVariables.Settings.enableDebugging)
+            {
+                Debug.Log("NavUtils: NavUtilLibApp.displayHSI()");
+            }
+
             if (!NavUtilLib.GlobalVariables.Settings.hsiState)
             {
                 Activate(true);
@@ -68,6 +77,11 @@ namespace NavUtilLib
 
         public void Activate(bool state)
         {
+            if (NavUtilLib.GlobalVariables.Settings.enableDebugging)
+            {
+                Debug.Log("NavUtils: NavUtilLibApp.Activate()");
+            }
+
             if (state)
             {
                 RenderingManager.AddToPostDrawQueue(3, OnDraw);
@@ -111,6 +125,11 @@ namespace NavUtilLib
 
         private void OnDraw()
         {
+            if (NavUtilLib.GlobalVariables.Settings.enableDebugging)
+            {
+                Debug.Log("NavUtils: NavUtilLibApp.OnDraw()");
+            }
+
             //Debug.Log("HSI: OnDraw()");
             if (CameraManager.Instance.currentCameraMode == CameraManager.CameraMode.Flight || ((CameraManager.Instance.currentCameraMode == CameraManager.CameraMode.Internal || CameraManager.Instance.currentCameraMode == CameraManager.CameraMode.IVA) && GlobalVariables.Settings.enableWindowsInIVA))
             {
@@ -132,6 +151,11 @@ namespace NavUtilLib
 
         private void DrawGauge(RenderTexture screen)
         {
+            if (NavUtilLib.GlobalVariables.Settings.enableDebugging)
+            {
+                Debug.Log("NavUtils: NavUtilLibApp.DrawGauge()");
+            }
+
             NavUtilLib.GlobalVariables.FlightData.updateNavigationData();
 
             RenderTexture pt = RenderTexture.active;
@@ -170,6 +194,11 @@ namespace NavUtilLib
 
         private void OnWindow(int WindowID)
         {
+            if (NavUtilLib.GlobalVariables.Settings.enableDebugging)
+            {
+                Debug.Log("NavUtils: NavUtilLibApp.OnWindow()");
+            }
+
             //Debug.Log("HSI: OnWindow()");
 
 
@@ -250,12 +279,33 @@ namespace NavUtilLib
 
 
 
-
+        void AddButton()
+        {
+            if (ApplicationLauncher.Ready && !NavUtilLib.GlobalVariables.Settings.useBlizzy78ToolBar)
+            {
+                appButton = ApplicationLauncher.Instance.AddModApplication(
+                    onAppLaunchToggleOn,
+                    onAppLaunchToggleOff,
+                    onAppLaunchHoverOn,
+                    onAppLaunchHoverOff,
+                    onAppLaunchEnable,
+                    onAppLaunchDisable,
+                    ApplicationLauncher.AppScenes.FLIGHT,
+                    (Texture)GameDatabase.Instance.GetTexture("KerbalScienceFoundation/NavInstruments/CommonTextures/toolbarButton3838", false)
+                  );
+                ;
+            }
+        }
 
 
 
         void Awake()
         {
+            if (NavUtilLib.GlobalVariables.Settings.enableDebugging)
+            {
+                Debug.Log("NavUtils: NavUtilLibApp.Awake()");
+            }
+
             //load settings to config
             ConfigLoader.LoadSettings(var.Settings.settingsFileURL);
 
@@ -265,12 +315,15 @@ namespace NavUtilLib
             {
 
 
-                GameEvents.onGUIApplicationLauncherReady.Add(OnGUIReady);
+                //GameEvents.onGUIApplicationLauncherReady.Add(OnGUIReady);
+
+                GameEvents.onGUIApplicationLauncherReady.Add(AddButton);
 
                 GameEvents.onGameSceneLoadRequested.Add(dEstroy);
             }
 
             NavUtilLib.GlobalVariables.Settings.appInstance = this.GetInstanceID();
+            NavUtilLib.GlobalVariables.Settings.appReference = this;
 
 
         }
@@ -297,6 +350,11 @@ namespace NavUtilLib
 
         void OnGUIReady()
         {
+            if (NavUtilLib.GlobalVariables.Settings.enableDebugging)
+            {
+                Debug.Log("NavUtils: NavUtilLibApp.OnGUIReady()");
+            }
+
             if (ApplicationLauncher.Ready && !NavUtilLib.GlobalVariables.Settings.useBlizzy78ToolBar)
             {
                 appButton = ApplicationLauncher.Instance.AddModApplication(
