@@ -40,5 +40,7 @@ namespace NavUtilLib
 
         //[KSPField]
         public float innerMarkerDist = 200;
+        
+        public bool isINSTarget = false; //true indicates that the runway is not the actual runway and is used as a target point for INS 
     }
 }

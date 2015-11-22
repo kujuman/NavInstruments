@@ -5,6 +5,7 @@ using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
 using KSP;
+using FinePrint;
 
 namespace NavUtilLib
 {
@@ -100,7 +101,6 @@ namespace NavUtilLib
             public static Runway selectedRwy;
             public static float selectedGlideSlope;
             public static Vessel currentVessel;
-
             /// <summary>
             /// /////////
             /// </summary>
@@ -120,11 +120,43 @@ namespace NavUtilLib
             public static float locDeviation;
             public static float gsDeviation;
             public static float runwayHeading;
+            
+            public static bool isINSMode() {
+            	return (selectedRwy != null) && selectedRwy.isINSTarget;
+            }
 
             public static void updateNavigationData()
             {
-                selectedGlideSlope = gsList[gsIdx];
+            	
+            	selectedGlideSlope = gsList[gsIdx];	
                 selectedRwy = rwyList[rwyIdx];
+           	
+                //Since there seems to be no callback methods to determine whether waypoint has been set or changed, we have to refresh INS data on every update  
+            	NavWaypoint navpoint = FinePrint.WaypointManager.navWaypoint;
+	            if (FinePrint.WaypointManager.navIsActive() && (navpoint != null)) {
+            		//Trying to find the FinePrint waypoint that navigation is set for:
+            		Waypoint waypoint = null;
+            		foreach (Waypoint wp in FinePrint.WaypointManager.Instance().AllWaypoints()) {
+            			if (navpoint.latitude == wp.latitude && navpoint.longitude == wp.longitude) {
+            				waypoint = wp;
+            				break;
+            			}
+            		}
+            		if (waypoint != null) {
+            			//If waypoint is fine then generate fake target runway every time
+		            	Runway insTarget = new Runway();
+		            	insTarget.isINSTarget = true;
+		            	insTarget.ident = waypoint.name;
+		            	insTarget.hdg = selectedRwy != null ? selectedRwy.hdg : 0;
+		            	insTarget.altMSL = (float)waypoint.altitude;
+		            	insTarget.locLatitude = (float)navpoint.latitude;
+		            	insTarget.locLongitude = (float)navpoint.longitude;
+		            	insTarget.gsLatitude = (float)navpoint.latitude;
+		            	insTarget.gsLongitude = (float)navpoint.longitude;
+		            	selectedRwy = insTarget;
+            		}
+	            }
+	            
                 currentVessel = FlightGlobals.ActiveVessel;
 
                 bearing = NavUtilLib.Utils.CalcBearingToBeacon(currentVessel, selectedRwy);
