@@ -148,7 +148,7 @@ namespace NavUtilLib
 		            	insTarget.isINSTarget = true;
 		            	insTarget.ident = waypoint.name;
 		            	insTarget.hdg = selectedRwy != null ? selectedRwy.hdg : 0;
-		            	insTarget.altMSL = (float)waypoint.altitude;
+		            	insTarget.altMSL = (float)(waypoint.height + waypoint.altitude);
 		            	insTarget.locLatitude = (float)navpoint.latitude;
 		            	insTarget.locLongitude = (float)navpoint.longitude;
 		            	insTarget.gsLatitude = (float)navpoint.latitude;
