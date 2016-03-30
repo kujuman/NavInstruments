@@ -52,8 +52,9 @@ namespace NavUtilLib
 
 
 
-                if (var.FlightData.locDeviation > 10 && var.FlightData.locDeviation < 170 || var.FlightData.locDeviation < -10 && var.FlightData.locDeviation > -170)
+                if (var.FlightData.isINSMode() || var.FlightData.locDeviation > 10 && var.FlightData.locDeviation < 170 || var.FlightData.locDeviation < -10 && var.FlightData.locDeviation > -170) {
                     locFlag = true;
+                }
 
                 if (var.FlightData.locDeviation < -90 || var.FlightData.locDeviation > 90)
                 {
@@ -114,11 +115,11 @@ namespace NavUtilLib
                     else
                     {
                         fineLoc = false;
-
                         NavUtilLib.GlobalVariables.Materials.Instance.localizer.color = Color.magenta;
                         screen = NavUtilLib.TextWriter.addTextToRT(screen, locMode, new Vector2(380, screen.height - 570), NavUtilLib.GlobalVariables.Materials.Instance.whiteFont, 0.5f);
                     }
-
+                    
+                    
                     deviationCorrection = Mathf.Clamp(deviationCorrection, -0.234375f, 0.234375f);
 
 
@@ -129,14 +130,13 @@ namespace NavUtilLib
                     screen = NavUtilLib.Graphics.drawMovedImagePortion(var.Materials.Instance.flag, .34375f, .65625f, 0, 1, screen, new Vector2(.821875f, 0.2046875f), false);
                 }
 
-                if(locFlag || !fineLoc)
+                if(locFlag || !fineLoc || var.FlightData.isINSMode())
                     NavUtilLib.GlobalVariables.Materials.Instance.NDBneedle.color = Color.white;
-
 
                 screen = NavUtilLib.Graphics.drawMovedImage(var.Materials.Instance.overlay, screen, new Vector2(0, 0), false, false);
                 //marker beacons
                 //imageBox takes bottom x, 
-                if (var.FlightData.dme < 200000)
+                if ((var.FlightData.dme < 200000) && !var.FlightData.isINSMode())
                 {
                     var fB = NavUtilLib.Utils.CalcBearingTo(Utils.CalcRadiansFromDeg(var.FlightData.selectedRwy.gsLongitude - var.FlightData.currentVessel.longitude),
                                             Utils.CalcRadiansFromDeg(var.FlightData.currentVessel.latitude),
@@ -144,7 +144,7 @@ namespace NavUtilLib
 
                     var gsHorDev = Utils.CalcLocalizerDeviation(fB,var.FlightData.selectedRwy);
 
-                    if (Math.Abs(gsHorDev) < 25)
+                    if (!var.FlightData.isINSMode() && (Math.Abs(gsHorDev) < 25) && (var.FlightData.dme<12000))
                         gsFlag = false;
 
 
