@@ -2,6 +2,7 @@
 
 using System;
 using UnityEngine;
+using KSP;
 
 namespace NavUtilLib
 {

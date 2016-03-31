@@ -137,9 +137,16 @@ namespace NavUtilLib
 
         public static Material loadMaterial(string fileName, Material mat, int width, int height)
         {
-            Shader unlit = Shader.Find("KSP/Alpha/Unlit Transparent");
+            if (GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtilLib: Loading Material " + fileName);
+
+            //Shader unlit = Shader.Find("KSP/Alpha/Unlit Transparent");
+
+            Shader unlit = Shader.Find("Sprites/Default");
+
             mat = new Material(unlit);
+           
             mat.color = new Color(1, 1, 1, 1);
+            mat.color = Color.white;
             mat.mainTexture = texFile(fileName, width, height);
             return mat;
         }

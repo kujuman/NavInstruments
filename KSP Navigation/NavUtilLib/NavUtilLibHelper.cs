@@ -3,26 +3,33 @@
 using System;
 using UnityEngine;
 using KSP;
+using UnityEngine.UI;
 using NavUtilLib;
 using var = NavUtilLib.GlobalVariables;
 
 
 namespace NavUtilLib
 {
-    [KSPAddon(KSPAddon.Startup.MainMenu, true)] //used to start up in flight, and be false
+    [KSPAddon(KSPAddon.Startup.Flight, false)] //used to start up in flight, and be false
     public class NavUtilLibApp : MonoBehaviour
     {
+        private void OnGUI()
+        {
+            //if (NavUtilLib.GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtils: OnGUI()");
+
+            if (NavUtilLib.GlobalVariables.Settings.hsiState) OnDraw();
+        }
 
 
         //this class is to help load textures via GameDatabase since we cannot use static classes
 
         NavUtilLibApp app;
 
-        ApplicationLauncherButton appButton;
+        KSP.UI.Screens.ApplicationLauncherButton appButton;
 
         public bool isHovering = false;
 
-        private bool visible = false;
+        //private bool visible = false;
 
         //RUIPanelTabGroup pTG;
 
@@ -57,23 +64,38 @@ namespace NavUtilLib
         public void displayHSI()
         {
             if (NavUtilLib.GlobalVariables.Settings.enableDebugging)
-            {
                 Debug.Log("NavUtils: NavUtilLibApp.displayHSI()");
-            }
 
             if (!NavUtilLib.GlobalVariables.Settings.hsiState)
             {
                 Activate(true);
 
+                Debug.Log("NavUtils: NavUtilLibApp.displayHSI() Post Activate()");
+
                 NavUtilLib.GlobalVariables.Settings.hsiState = true;
+                if (NavUtilLib.GlobalVariables.Settings.enableDebugging)
+                    Debug.Log("NavUtils: hsiState = " + NavUtilLib.GlobalVariables.Settings.hsiState);
+
+                Debug.Log(this.ToString());
+                Debug.Log(this);
+                //Debug.Log(FindObjectOfType<NavUtilLibApp>().ToString());
+                Debug.Log(GlobalVariables.Settings.appReference.ToString());
+
             }
             else
             {
                 Activate(false);
 
+                Debug.Log("NavUtils: NavUtilLibApp.displayHSI() Post Activate()");
+
                 NavUtilLib.GlobalVariables.Settings.hsiState = false;
+
+                if (NavUtilLib.GlobalVariables.Settings.enableDebugging)
+                    Debug.Log("NavUtils: hsiState = " + NavUtilLib.GlobalVariables.Settings.hsiState);
             }
         }
+
+
 
         public void Activate(bool state)
         {
@@ -84,15 +106,20 @@ namespace NavUtilLib
 
             if (state)
             {
-                RenderingManager.AddToPostDrawQueue(3, OnDraw);
+                //RenderingManager.AddToPostDrawQueue(3, OnDraw);
 
                 rt = new RenderTexture(640, 640, 24, RenderTextureFormat.ARGB32);
+                rt.Create();
+
+
+
+                //KSP.UI.Rendering.RTCanvas
 
                 if (GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtil: Starting systems...");
                 if (!var.Settings.navAidsIsLoaded)
                     var.Settings.loadNavAids();
 
-                if (!var.Materials.isLoaded)
+                //if (!var.Materials.isLoaded)
                     var.Materials.loadMaterials();
 
                 //if (!var.Audio.isLoaded)
@@ -115,7 +142,7 @@ namespace NavUtilLib
             else
             {
                 state = false;
-                RenderingManager.RemoveFromPostDrawQueue(3, OnDraw); //close the GUI
+                //RenderingManager.RemoveFromPostDrawQueue(3, OnDraw); //close the GUI
                 NavUtilLib.GlobalVariables.Settings.hsiPosition.x = windowPosition.x;
                 NavUtilLib.GlobalVariables.Settings.hsiPosition.y = windowPosition.y;
 
@@ -160,8 +187,6 @@ namespace NavUtilLib
 
             RenderTexture pt = RenderTexture.active;
             RenderTexture.active = screen;
-
-            if (!screen.IsCreated()) screen.Create();
 
             NavUtilLib.DisplayData.DrawHSI(screen, 1);
 
@@ -268,8 +293,12 @@ namespace NavUtilLib
             else
                 gsHover = false;
 
+            rt.Create();
+
             DrawGauge(rt);
             GUI.DrawTexture(new Rect(0, 0, windowPosition.width, windowPosition.height), rt, ScaleMode.ScaleToFit);
+
+            //GUI.DrawTexture(new Rect(0, 0, windowPosition.width, windowPosition.height), var.Materials.Instance.overlay.mainTexture);
 
             GUI.DragWindow();
         }
@@ -278,16 +307,16 @@ namespace NavUtilLib
 
         void AddButton()
         {
-            if (ApplicationLauncher.Ready && !NavUtilLib.GlobalVariables.Settings.useBlizzy78ToolBar)
+            if (KSP.UI.Screens.ApplicationLauncher.Ready && !NavUtilLib.GlobalVariables.Settings.useBlizzy78ToolBar)
             {
-                appButton = ApplicationLauncher.Instance.AddModApplication(
+                appButton = KSP.UI.Screens.ApplicationLauncher.Instance.AddModApplication(
                     onAppLaunchToggleOn,
                     onAppLaunchToggleOff,
                     onAppLaunchHoverOn,
                     onAppLaunchHoverOff,
                     onAppLaunchEnable,
                     onAppLaunchDisable,
-                    ApplicationLauncher.AppScenes.FLIGHT,
+                    KSP.UI.Screens.ApplicationLauncher.AppScenes.FLIGHT,
                     (Texture)GameDatabase.Instance.GetTexture("KerbalScienceFoundation/NavInstruments/CommonTextures/toolbarButton3838", false)
                   );
                 ;
@@ -339,7 +368,7 @@ namespace NavUtilLib
 
                 NavUtilLib.GlobalVariables.Settings.hsiState = false;
 
-                ApplicationLauncher.Instance.RemoveModApplication(appButton);
+                KSP.UI.Screens.ApplicationLauncher.Instance.RemoveModApplication(appButton);
             }
         }
 
@@ -352,16 +381,16 @@ namespace NavUtilLib
                 Debug.Log("NavUtils: NavUtilLibApp.OnGUIReady()");
             }
 
-            if (ApplicationLauncher.Ready && !NavUtilLib.GlobalVariables.Settings.useBlizzy78ToolBar)
+            if (KSP.UI.Screens.ApplicationLauncher.Ready && !NavUtilLib.GlobalVariables.Settings.useBlizzy78ToolBar)
             {
-                appButton = ApplicationLauncher.Instance.AddModApplication(
+                appButton = KSP.UI.Screens.ApplicationLauncher.Instance.AddModApplication(
                     onAppLaunchToggleOn,
                     onAppLaunchToggleOff,
                     onAppLaunchHoverOn,
                     onAppLaunchHoverOff,
                     onAppLaunchEnable,
                     onAppLaunchDisable,
-                    ApplicationLauncher.AppScenes.FLIGHT,
+                    KSP.UI.Screens.ApplicationLauncher.AppScenes.FLIGHT,
                     (Texture)GameDatabase.Instance.GetTexture("KerbalScienceFoundation/NavInstruments/CommonTextures/toolbarButton3838", false)
                   );
                 ;
@@ -379,6 +408,7 @@ namespace NavUtilLib
 
         void onAppLaunchToggleOn()
         {
+            if (NavUtilLib.GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtils: onAppLaunchToggleOn");
             if(isHovering)
             {
                 if (Event.current.button == 1)
@@ -400,7 +430,7 @@ namespace NavUtilLib
             //Debug.Log();
 
 
-
+        if (NavUtilLib.GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtils: onAppLaunchToggleOn End");
         }
 
 
@@ -408,6 +438,7 @@ namespace NavUtilLib
 
         void onAppLaunchToggleOff()
         {
+            if (NavUtilLib.GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtils: onAppLaunchToggleOff");
             if (isHovering)
             {
                 if (Event.current.button == 1)
@@ -481,10 +512,12 @@ namespace NavUtilLib
         }
         void onAppLaunchEnable()
         {
+            if (NavUtilLib.GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtils: onAppLaunchEnable");
             ;
         }
         void onAppLaunchDisable()
         {
+            if (NavUtilLib.GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtils: onAppLaunchDisable");
             ;
         }
 

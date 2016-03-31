@@ -15,8 +15,8 @@ namespace NavUtilLib
             //Debug.Log("Printing: " + Text);
 
             GL.PushMatrix();
-                            GL.LoadPixelMatrix(0, rt.width, rt.height, 0);
-                GL.Viewport(new Rect(0, 0, rt.width, rt.height));
+            GL.LoadPixelMatrix(0, rt.width, rt.height, 0);
+            GL.Viewport(new Rect(0, 0, rt.width, rt.height));
             var s = Text;
             s = s.ToUpper();
             float xOff = position.x;

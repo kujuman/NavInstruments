@@ -301,8 +301,8 @@ namespace NavUtilLib
                 try
                 {
                 markerAudio = audioplayer.AddComponent<AudioSource>();
-                markerAudio.volume = GameSettings.VOICE_VOLUME;
-                markerAudio.pan = 0;
+                markerAudio.volume = GameSettings.UI_VOLUME;
+                markerAudio.panStereo = 0;
                 markerAudio.dopplerLevel = 0;
                 markerAudio.bypassEffects = true;
                 markerAudio.loop = true;

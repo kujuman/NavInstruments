@@ -243,7 +243,7 @@ namespace NavUtilLib.Analog
 
 
 
-            float deltaNum = new float();
+            //float deltaNum = new float();
             float rotateLim = new float();
             float transLim = new float();
 

@@ -43,8 +43,33 @@ namespace NavUtilLib
                 return 0;
             }
 
-            public static void DrawHSI(RenderTexture screen, float aspectRatio)
+            public static void DrawHSI2(RenderTexture screen, float aspectRatio) // a testing method
             {
+                if (NavUtilLib.GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtils: DrawHSI() (Test)");
+                
+                
+                
+                GL.PushMatrix();
+                GL.LoadPixelMatrix(0, screen.width, screen.height, 0);
+                GL.Viewport(new Rect(0, 0, screen.width, screen.height));
+                GL.Clear(true, true, Color.green);
+
+                if (NavUtilLib.GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtils: DrawHSI() (Test)" + var.Materials.Instance.overlay.color);
+                if (NavUtilLib.GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtils: " + screen.height + " " + screen.width);
+
+                if (NavUtilLib.GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtils: " + var.Materials.Instance.overlay.mainTexture.height + " " + var.Materials.Instance.overlay.mainTexture.width);
+
+                screen = NavUtilLib.Graphics.drawMovedImage(var.Materials.Instance.overlay, screen, new Vector2(0, 0), false, false);
+
+                GL.PopMatrix();
+
+                if (NavUtilLib.GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtils: End DrawHSI() (Test)");
+            }
+
+            public static void DrawHSI(RenderTexture screen, float aspectRatio) //DrawHSI
+            {
+                if (NavUtilLib.GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtils: DrawHSI()");
+
                 var.FlightData.updateNavigationData();
 
                 locFlag = bcFlag = false;
@@ -61,16 +86,22 @@ namespace NavUtilLib
                     bcFlag = true;
                 }
 
+                if (NavUtilLib.GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtils: DrawHSI() PushMatrix");
+
                 GL.PushMatrix();
 
                 GL.LoadPixelMatrix(0, screen.width, screen.height, 0);
                 GL.Viewport(new Rect(0, 0, screen.width, screen.height));
                 GL.Clear(true, true, Color.black);
 
+                if (NavUtilLib.GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtils: DrawHSI() EndGL");
+
                 screen = NavUtilLib.Graphics.drawMovedImage(var.Materials.Instance.back, screen, new Vector2(0, 0), false, true);
                 screen = NavUtilLib.Graphics.drawCenterRotatedImage(360 - FlightGlobals.ship_heading, new Vector2(.5f, .5f), var.Materials.Instance.headingCard, screen, 0, 0);
                 screen = NavUtilLib.Graphics.drawCenterRotatedImage(360 - FlightGlobals.ship_heading + (float)var.FlightData.bearing, new Vector2(.5f, .5f), var.Materials.Instance.NDBneedle, screen, 0, 0);
                 screen = NavUtilLib.Graphics.drawCenterRotatedImage(360 - FlightGlobals.ship_heading + (float)var.FlightData.selectedRwy.hdg, new Vector2(.5f, .5f), var.Materials.Instance.course, screen, 0, 0);
+
+                if (NavUtilLib.GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtils: DrawHSI() EndBasicDraws");
 
                 bool fineLoc = false;
 
@@ -147,7 +178,7 @@ namespace NavUtilLib
                     if (!var.FlightData.isINSMode() && (Math.Abs(gsHorDev) < 25) && (var.FlightData.dme<12000))
                         gsFlag = false;
 
-
+                    if (NavUtilLib.GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtils: DrawHSI() Start MkrBcn");
                     //checkmkrbcn
                     lastBcnCode = bcnCode;
 
@@ -180,6 +211,8 @@ namespace NavUtilLib
 
                     var deltaTime = Planetarium.GetUniversalTime() - timer;
 
+                    if (NavUtilLib.GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtils: DrawHSI() Bcn Case");
+
                     switch (bcnCode)
                     {
                         case 1:
@@ -204,6 +237,8 @@ namespace NavUtilLib
                             var.Audio.markerAudio.Stop();
                             break;
                     }
+
+                    if (NavUtilLib.GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtils: DrawHSI() PreMarkerBcn");
 
                     if (drawUnlit || bcnCode == 0)
                     {
@@ -235,6 +270,8 @@ namespace NavUtilLib
                     screen = NavUtilLib.Graphics.drawMovedImagePortion(var.Materials.Instance.mkrbcn, .75f, 1, 0, 1, screen, new Vector2(.046875f, .0203125f), false);
                 }
 
+                if (NavUtilLib.GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtils: DrawHSI() PreGS");
+
                 //find vertical location of pointer
                 float yO = -0.3125f * var.FlightData.gsDeviation;
                 //0.3125 per degree
@@ -242,12 +279,16 @@ namespace NavUtilLib
                 yO += 0.3609375f;
 
 
+                if (NavUtilLib.GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtils: DrawHSI() PreGS Flag");
+
                 if (gsFlag)
                     screen = NavUtilLib.Graphics.drawMovedImagePortion(var.Materials.Instance.flag, .65625f, 1, 0, 1, screen, new Vector2(.821875f, 0.2390625f), false);
                 else
                     screen = NavUtilLib.Graphics.drawMovedImage(var.Materials.Instance.pointer, screen, new Vector2(0.5f, yO), true, false);
 
                 GL.PopMatrix();
+
+                if (NavUtilLib.GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtils: End DrawHSI()");
             }
 
 
