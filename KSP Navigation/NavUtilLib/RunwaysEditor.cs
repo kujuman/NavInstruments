@@ -9,24 +9,23 @@ using Rwy = NavUtilLib.GlobalVariables.FlightData;
 
 namespace NavUtilGUI
 {
-    public class RunwaysEditor : MonoBehaviour
+    public static class RunwaysEditor // : Monobehaviour
 {
-        private Rect windowPos;
+        private static Rect windowPos;
 
-        private Vector2 rwyListVector =  new Vector2(0,0);
-        private float rwyListLength = 0;
+        private static Vector2 rwyListVector =  new Vector2(0,0);
+        private static float rwyListLength = 0;
 
-        private NavUtilLib.Runway tempRwy = new NavUtilLib.Runway();
-        private bool isNewRwy = true;
-        private bool useAutoHdg = false;
-        private bool useAutoElevation = false;
-        private bool makeMarkers = false;
+        private static NavUtilLib.Runway tempRwy = new NavUtilLib.Runway();
+        private static bool isNewRwy = true;
+        private static bool useAutoHdg = false;
+        private static bool useAutoElevation = false;
+        private static bool makeMarkers = false;
 
-        public void startGUI()
+        public static void startGUI()
         {
             if (!NavUtilLib.GlobalVariables.Settings.rwyEditorState)
             {
-                RenderingManager.AddToPostDrawQueue(3, OnDraw);
                 windowPos = NavUtilLib.GlobalVariables.Settings.rwyEditorGUI;
 
                 if (!NavUtilLib.GlobalVariables.Settings.navAidsIsLoaded)
@@ -36,7 +35,6 @@ namespace NavUtilGUI
             }
             else
             {
-                RenderingManager.RemoveFromPostDrawQueue(3, OnDraw);
                 NavUtilLib.GlobalVariables.Settings.rwyEditorGUI = windowPos;
 
                 //DestroyAfterTime.DestroyObject(this);
@@ -45,16 +43,16 @@ namespace NavUtilGUI
             NavUtilLib.GlobalVariables.Settings.rwyEditorState = !NavUtilLib.GlobalVariables.Settings.rwyEditorState;
         }
 
-        private void OnDraw()
+        public static void OnDraw()
         {
             if ((windowPos.xMin + windowPos.width) < 20) windowPos.xMin = 20 - windowPos.width;
             if (windowPos.yMin + windowPos.height < 20) windowPos.yMin = 20 - windowPos.height;
             if (windowPos.xMin > Screen.width - 20) windowPos.xMin = Screen.width - 20;
             if (windowPos.yMin > Screen.height - 20) windowPos.yMin = Screen.height - 20;
-            windowPos = GUI.Window(595, windowPos, OnWindow, "Runway Customizer");
+            windowPos = GUI.Window(450448971, windowPos, OnWindow, "Runway Customizer");
         }
 
-        private void OnWindow(int winID)
+        private static void OnWindow(int winID)
         {
             rwyListLength = Rwy.customRunways.Count * 40;
 
@@ -245,9 +243,11 @@ namespace NavUtilGUI
             GUI.DragWindow();
         }
 
-        public void WriteCustomRwys()
+        public static void WriteCustomRwys()
         {
             NavUtilLib.ConfigLoader.WriteCustomRunwaysToConfig(NavUtilLib.GlobalVariables.FlightData.customRunways, "custom.rwy");
+
+            NavUtilLib.GlobalVariables.FlightData.updateNavigationData();
         }
 
     }

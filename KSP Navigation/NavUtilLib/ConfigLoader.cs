@@ -106,6 +106,8 @@ namespace NavUtilLib
 
         public static void LoadSettings(string sSettingURL)
         {
+            Debug.Log("NavUtil: Loading Settings");
+
             ConfigNode settings = ConfigNode.Load(KSPUtil.ApplicationRootPath + sSettingURL);
 
             foreach (ConfigNode node in settings.GetNodes("NavUtilSettings"))
@@ -281,6 +283,8 @@ namespace NavUtilLib
 
         public static void SaveSettings(string sSettingURL)
         {
+            Debug.Log("NavUtil: Saving Settings");
+
             ConfigNode settings = new ConfigNode();
 
             //settings.name = "NavUtilSettings";

@@ -16,6 +16,7 @@ namespace NavUtilLib
             public static string settingsFileURL = "GameData/KerbalScienceFoundation/NavInstruments/settings.cfg";
             //public static string gsFileURL = "GameData/KerbalScienceFoundation/NavInstruments/glideslopes.cfg";
 
+            public static bool isKSPGUIActive = true;
 
             public static Rect hsiPosition = new Rect(50,50,640,640);
             public static float hsiGUIscale = 0.5f;
@@ -24,7 +25,6 @@ namespace NavUtilLib
             public static Rect settingsGUI = new Rect(100,50,250,180);
 
             public static Rect rwyEditorGUI = new Rect(50, 50, 450, 300);
-            public static NavUtilGUI.RunwaysEditor rE = new NavUtilGUI.RunwaysEditor();
             public static bool rwyEditorState = false;
 
             public static bool navAidsIsLoaded = false;
@@ -136,7 +136,8 @@ namespace NavUtilLib
 	            if (FinePrint.WaypointManager.navIsActive() && (navpoint != null)) {
             		//Trying to find the FinePrint waypoint that navigation is set for:
             		Waypoint waypoint = null;
-            		foreach (Waypoint wp in FinePrint.WaypointManager.Instance().AllWaypoints()) {
+
+            		foreach (Waypoint wp in FinePrint.WaypointManager.Instance().Waypoints) {
             			if (navpoint.latitude == wp.latitude && navpoint.longitude == wp.longitude) {
             				waypoint = wp;
             				break;

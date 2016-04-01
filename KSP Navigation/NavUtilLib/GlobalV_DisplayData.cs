@@ -175,7 +175,7 @@ namespace NavUtilLib
 
                     var gsHorDev = Utils.CalcLocalizerDeviation(fB,var.FlightData.selectedRwy);
 
-                    if (!var.FlightData.isINSMode() && (Math.Abs(gsHorDev) < 25) && (var.FlightData.dme<12000))
+                    if (!var.FlightData.isINSMode() && (Math.Abs(gsHorDev) < 25) && (var.FlightData.dme < 120000))
                         gsFlag = false;
 
                     if (NavUtilLib.GlobalVariables.Settings.enableDebugging) Debug.Log("NavUtils: DrawHSI() Start MkrBcn");
