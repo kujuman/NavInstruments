@@ -22,7 +22,7 @@ Runway
 	shortID = KSC2
 	hdg = 90
 	body = Kerbin
-	altMSL = 1500
+	altMSL = 425
 	gsLatitude = 20.5829
 	gsLongitude = -146.5116
 	locLatitude = 20.5829

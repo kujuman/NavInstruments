@@ -127,50 +127,58 @@ namespace NavUtilLib
 
             public static void updateNavigationData()
             {
-            	
-            	selectedGlideSlope = gsList[gsIdx];	
-                selectedRwy = rwyList[rwyIdx];
-           	
-                //Since there seems to be no callback methods to determine whether waypoint has been set or changed, we have to refresh INS data on every update  
-            	NavWaypoint navpoint = FinePrint.WaypointManager.navWaypoint;
-	            if (FinePrint.WaypointManager.navIsActive() && (navpoint != null)) {
-            		//Trying to find the FinePrint waypoint that navigation is set for:
-            		Waypoint waypoint = null;
+                //see if information is current
+                if (GetLastNavUpdateUT() != Planetarium.GetUniversalTime())
+                {
 
-            		foreach (Waypoint wp in FinePrint.WaypointManager.Instance().Waypoints) {
-            			if (navpoint.latitude == wp.latitude && navpoint.longitude == wp.longitude) {
-            				waypoint = wp;
-            				break;
-            			}
-            		}
-            		if (waypoint != null) {
-            			//If waypoint is fine then generate fake target runway every time
-		            	Runway insTarget = new Runway();
-		            	insTarget.isINSTarget = true;
-		            	insTarget.ident = waypoint.name;
-		            	insTarget.hdg = selectedRwy != null ? selectedRwy.hdg : 0;
-		            	insTarget.altMSL = (float)(waypoint.height + waypoint.altitude);
-		            	insTarget.locLatitude = (float)navpoint.latitude;
-		            	insTarget.locLongitude = (float)navpoint.longitude;
-		            	insTarget.gsLatitude = (float)navpoint.latitude;
-		            	insTarget.gsLongitude = (float)navpoint.longitude;
-		            	selectedRwy = insTarget;
-            		}
-	            }
-	            
-                currentVessel = FlightGlobals.ActiveVessel;
+                    selectedGlideSlope = gsList[gsIdx];
+                    selectedRwy = rwyList[rwyIdx];
 
-                bearing = NavUtilLib.Utils.CalcBearingToBeacon(currentVessel, selectedRwy);
-                dme = NavUtilLib.Utils.CalcDistanceToBeacon(currentVessel, selectedRwy);
-                elevationAngle = NavUtilLib.Utils.CalcElevationAngle(currentVessel, selectedRwy);
-                //locDeviation = NavUtilLib.Utils.CalcLocalizerDeviation(bearing, selectedRwy);
-                locDeviation = (float)NavUtilLib.Utils.CalcLocalizerDeviation(currentVessel, selectedRwy);
-                gsDeviation = NavUtilLib.Utils.CalcGlideslopeDeviation(elevationAngle, selectedGlideSlope);
+                    //Since there seems to be no callback methods to determine whether waypoint has been set or changed, we have to refresh INS data on every update  
+                    NavWaypoint navpoint = FinePrint.WaypointManager.navWaypoint;
+                    if (FinePrint.WaypointManager.navIsActive() && (navpoint != null))
+                    {
+                        //Trying to find the FinePrint waypoint that navigation is set for:
+                        Waypoint waypoint = null;
 
-                //
-                runwayHeading = (float)NavUtilLib.Utils.CalcProjectedRunwayHeading(currentVessel, selectedRwy);
+                        foreach (Waypoint wp in FinePrint.WaypointManager.Instance().Waypoints)
+                        {
+                            if (navpoint.latitude == wp.latitude && navpoint.longitude == wp.longitude)
+                            {
+                                waypoint = wp;
+                                break;
+                            }
+                        }
+                        if (waypoint != null)
+                        {
+                            //If waypoint is fine then generate fake target runway every time
+                            Runway insTarget = new Runway();
+                            insTarget.isINSTarget = true;
+                            insTarget.ident = waypoint.name;
+                            insTarget.hdg = selectedRwy != null ? selectedRwy.hdg : 0;
+                            insTarget.altMSL = (float)(waypoint.height + waypoint.altitude);
+                            insTarget.locLatitude = (float)navpoint.latitude;
+                            insTarget.locLongitude = (float)navpoint.longitude;
+                            insTarget.gsLatitude = (float)navpoint.latitude;
+                            insTarget.gsLongitude = (float)navpoint.longitude;
+                            selectedRwy = insTarget;
+                        }
+                    }
 
-                SetLastNavUpdateUT();
+                    currentVessel = FlightGlobals.ActiveVessel;
+
+                    bearing = NavUtilLib.Utils.CalcBearingToBeacon(currentVessel, selectedRwy);
+                    dme = NavUtilLib.Utils.CalcDistanceToBeacon(currentVessel, selectedRwy);
+                    elevationAngle = NavUtilLib.Utils.CalcElevationAngle(currentVessel, selectedRwy);
+                    //locDeviation = NavUtilLib.Utils.CalcLocalizerDeviation(bearing, selectedRwy);
+                    locDeviation = (float)NavUtilLib.Utils.CalcLocalizerDeviation(currentVessel, selectedRwy);
+                    gsDeviation = NavUtilLib.Utils.CalcGlideslopeDeviation(elevationAngle, selectedGlideSlope);
+
+                    //
+                    runwayHeading = (float)NavUtilLib.Utils.CalcProjectedRunwayHeading(currentVessel, selectedRwy);
+
+                    SetLastNavUpdateUT();
+                }
             }
         }
 
