@@ -70,6 +70,9 @@ namespace NavUtilRPM
                 case "SELECTEDRUNWAYIDENT":
                     return FlightData.selectedRwy.ident;
 
+                case "SELECTEDRUNWAYSHORTID":
+                    return FlightData.selectedRwy.shortID;
+
                 case "SELECTEDRUNWAYLAT":
                     return FlightData.selectedRwy.locLatitude;
 

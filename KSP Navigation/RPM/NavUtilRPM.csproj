@@ -33,11 +33,11 @@
   <ItemGroup>
     <Reference Include="Assembly-CSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\References\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\..\..\..\..\Desktop\KSP Modding\Assemblies\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="UnityEngine">
-      <HintPath>..\..\..\References\UnityEngine.dll</HintPath>
+      <HintPath>..\..\..\..\..\Desktop\KSP Modding\Assemblies\UnityEngine.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -54,7 +54,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetPath)" "C:\Users\Daniel\Desktop\NavInstruments\GameData\KerbalScienceFoundation\NavInstruments"</PostBuildEvent>
+    <PostBuildEvent>copy "$(TargetPath)" "C:\Users\Daniel7\Documents\GitHub\NavInstruments\GameData\KerbalScienceFoundation\NavInstruments"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

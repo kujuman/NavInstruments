@@ -34,30 +34,30 @@
   <ItemGroup>
     <Reference Include="Assembly-CSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\References\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\..\..\..\..\Desktop\KSP Modding\Assemblies\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\References\Assembly-CSharp-firstpass.dll</HintPath>
+      <HintPath>..\..\..\..\..\Desktop\KSP Modding\Assemblies\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
     <Reference Include="KSPAssets, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\References\KSPAssets.dll</HintPath>
+      <HintPath>..\..\..\..\..\Desktop\KSP Modding\Assemblies\KSPAssets.dll</HintPath>
     </Reference>
     <Reference Include="KSPCore">
-      <HintPath>..\..\..\References\KSPCore.dll</HintPath>
+      <HintPath>..\..\..\..\..\Desktop\KSP Modding\Assemblies\KSPCore.dll</HintPath>
     </Reference>
     <Reference Include="KSPUtil, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\References\KSPUtil.dll</HintPath>
+      <HintPath>..\..\..\..\..\Desktop\KSP Modding\Assemblies\KSPUtil.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="UnityEngine">
-      <HintPath>..\..\..\References\UnityEngine.dll</HintPath>
+      <HintPath>..\..\..\..\..\Desktop\KSP Modding\Assemblies\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\References\UnityEngine.UI.dll</HintPath>
+      <HintPath>..\..\..\..\..\Desktop\KSP Modding\Assemblies\UnityEngine.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -79,7 +79,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetPath)" "C:\Users\Daniel\Desktop\NavInstruments\GameData\KerbalScienceFoundation\NavInstruments"</PostBuildEvent>
+    <PostBuildEvent>copy "$(TargetPath)" "C:\Users\Daniel7\Documents\GitHub\NavInstruments\GameData\KerbalScienceFoundation\NavInstruments"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
