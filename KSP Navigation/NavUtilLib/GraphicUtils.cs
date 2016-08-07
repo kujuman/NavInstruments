@@ -154,7 +154,7 @@ namespace NavUtilLib
         private static Texture2D texFile(string fileName, int w, int h)
         {
             Texture2D t = new Texture2D(w, h);
-            t.LoadImage(KSP.IO.File.ReadAllBytes<NavUtilLibApp>(fileName));
+            t.LoadImage(KSP.IO.File.ReadAllBytes<NavUtilLibApp>(fileName, null));
             return t;
         }
     }

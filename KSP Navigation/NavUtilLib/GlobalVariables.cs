@@ -142,6 +142,7 @@ namespace NavUtilLib
                         Runway insTarget = new Runway();
                         insTarget.isINSTarget = true;
                         insTarget.ident = waypoint.name;
+                        insTarget.body = waypoint.Body.name;
                         insTarget.hdg = selectedRwy != null ? selectedRwy.hdg : 0;
                         insTarget.altMSL = (float)(waypoint.Height + waypoint.Altitude);
                         insTarget.locLatitude = (float)waypoint.Latitude;
