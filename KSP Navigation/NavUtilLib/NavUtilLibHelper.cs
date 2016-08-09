@@ -228,7 +228,7 @@ namespace NavUtilLib
             {
                 //displayHSI();
                 //Debug.Log("CloseHSI");
-                appButton.SetFalse();
+                appButton.SetFalse(true);
                 //goto CloseWindow;
             }
 
